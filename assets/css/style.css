@@ -828,6 +828,10 @@ a {
         padding: 1.5rem;
     }
 
+    .sidebar-footer {
+        margin-top: 2rem;
+    }
+
     /* Transform Native Tables into Cards */
     table.modern-table,
     table.modern-table tbody,
