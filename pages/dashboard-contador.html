@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
-    <div class="theme-toggle-wrapper" style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 1000;">
-        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema">
+    <div class="theme-toggle-wrapper fixed-top-right">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema" aria-label="Alternar Tema">
             <i class="ph ph-moon"></i>
         </button>
     </div>
@@ -22,9 +22,9 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo" onclick="window.location.href='index.html'">
+            <div class="sidebar-logo" onclick="window.location.href='../index.html'">
                 <i class="ph ph-calculator"></i>
-                <span>Contador</span>
+                <span>Área do Contador</span>
             </div>
 
             <nav class="sidebar-menu">
@@ -43,7 +43,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="index.html" class="menu-item logout-btn">
+                <a href="../index.html" class="menu-item logout-btn">
                     <i class="ph ph-sign-out"></i>
                     <span>Sair do Sistema</span>
                 </a>
@@ -53,15 +53,15 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="mobile-header">
-                <div class="sidebar-logo" style="margin: 0; padding: 0; border: none;">
+                <div class="sidebar-logo m-0 p-0 border-none">
                     <i class="ph ph-calculator"></i> Conta<span>Pro</span>
                 </div>
-                <button class="menu-toggle" id="menuToggle">
+                <button class="menu-toggle" id="menuToggle" aria-label="Alternar Menu">
                     <i class="ph ph-list"></i>
                 </button>
             </header>
 
-            <div class="glass-card" style="margin-top: 2rem;">
+            <div class="glass-card mt-2">
 
                 <!-- TAB: Dashboard / Resumo -->
                 <section id="dashboard-resumo" class="tab-content active">
@@ -73,8 +73,8 @@
                     </div>
 
                     <div class="stats-grid">
-                        <div class="stat-card glass-card" style="padding: 1.25rem;">
-                            <div class="stat-icon" style="color: var(--accent-contador);">
+                        <div class="stat-card glass-card p-5">
+                            <div class="stat-icon text-contador">
                                 <i class="ph ph-files"></i>
                             </div>
                             <div class="stat-info">
@@ -82,8 +82,8 @@
                                 <strong>12</strong>
                             </div>
                         </div>
-                        <div class="stat-card glass-card" style="padding: 1.25rem;">
-                            <div class="stat-icon" style="color: var(--brand-primary);">
+                        <div class="stat-card glass-card p-5">
+                            <div class="stat-icon text-primary">
                                 <i class="ph ph-users"></i>
                             </div>
                             <div class="stat-info">
@@ -91,8 +91,8 @@
                                 <strong>45 empresas</strong>
                             </div>
                         </div>
-                        <div class="stat-card glass-card" style="padding: 1.25rem;">
-                            <div class="stat-icon" style="color: var(--accent-cliente);">
+                        <div class="stat-card glass-card p-5">
+                            <div class="stat-icon text-cliente">
                                 <i class="ph ph-check-circle"></i>
                             </div>
                             <div class="stat-info">
@@ -103,7 +103,7 @@
                     </div>
 
                     <div class="table-container">
-                        <h3 style="margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600;">Obrigações da Semana
+                        <h3 class="table-title">Obrigações da Semana
                             (Simples e Presumido)</h3>
                         <table class="modern-table">
                             <thead>
@@ -122,28 +122,31 @@
                                     <td data-label="Prazo">15/05/2026</td>
                                     <td data-label="Status"><span class="status-badge status-warning">Pendente</span>
                                     </td>
-                                    <td data-label="Ações"><button class="btn-secondary"
-                                            style="padding: 0.5rem 1rem;"><i class="ph ph-paper-plane-right"></i>
+                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
+                                            aria-label="Processar Guia">
+                                            <i class="ph ph-paper-plane-right"></i>
                                             Processar</button></td>
                                 </tr>
                                 <tr>
                                     <td data-label="Empresa">Comércio Silva ME</td>
                                     <td data-label="Obrigação">SPED Fiscal</td>
                                     <td data-label="Prazo">12/05/2026</td>
-                                    <td data-label="Status"><span class="status-badge status-danger">Atrazo (2
+                                    <td data-label="Status"><span class="status-badge status-danger">Atraso (2
                                             dias)</span></td>
-                                    <td data-label="Ações"><button class="btn-secondary"
-                                            style="padding: 0.5rem 1rem;"><i class="ph ph-warning-circle"></i>
+                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
+                                            aria-label="Notificar Empresa">
+                                            <i class="ph ph-warning-circle"></i>
                                             Notificar</button></td>
                                 </tr>
                                 <tr>
                                     <td data-label="Empresa">Consultoria RH S/A</td>
                                     <td data-label="Obrigação">Folha - eSocial</td>
                                     <td data-label="Prazo">07/05/2026</td>
-                                    <td data-label="Status"><span class="status-badge status-success">Transmisido</span>
+                                    <td data-label="Status"><span class="status-badge status-success">Transmitido</span>
                                     </td>
-                                    <td data-label="Ações"><button class="btn-secondary"
-                                            style="padding: 0.5rem 1rem;"><i class="ph ph-eye"></i> Recibo</button></td>
+                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
+                                            aria-label="Ver Recibo">
+                                            <i class="ph ph-eye"></i> Recibo</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -158,48 +161,44 @@
                             <p>Gestão e Ficha das Empresas Associadas</p>
                         </div>
                         <div class="dashboard-header-actions">
-                            <div class="input-group" style="width: 250px;">
+                            <div class="input-group w-250">
                                 <i class="ph ph-magnifying-glass"></i>
-                                <input type="text" placeholder="Buscar CNPJ ou Razão...">
+                                <input type="text" placeholder="Buscar CNPJ ou Razão..."
+                                    aria-label="Buscar CNPJ ou Razão">
                             </div>
                         </div>
                     </div>
 
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-                        <div class="glass-card"
-                            style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <h4 style="font-weight: 600; font-size: 1.1rem; color: var(--accent-contador);">Tech
+                    <div class="grid-cards-xl">
+                        <div class="glass-card client-card">
+                            <div class="client-header">
+                                <h4 class="client-name text-contador">Tech
                                     Nova LTDA</h4>
                                 <span class="status-badge status-info">Simples</span>
                             </div>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">CNPJ: 12.345.678/0001-90</p>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Categoria: Desenvolvimento</p>
-                            <div
-                                style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1rem; display: flex; gap: 0.5rem;">
-                                <button class="btn-secondary"
-                                    style="flex: 1; text-align: center; padding: 0.5rem;">Pasta</button>
-                                <button class="btn-secondary"
-                                    style="flex: 1; text-align: center; padding: 0.5rem;">Ficha Contábil</button>
+                            <p class="client-info">CNPJ: 12.345.678/0001-90</p>
+                            <p class="client-info">Categoria: Desenvolvimento</p>
+                            <div class="client-actions">
+                                <button class="btn-secondary flex-1 text-center p-half"
+                                    aria-label="Abrir Pasta">Pasta</button>
+                                <button class="btn-secondary flex-1 text-center p-half"
+                                    aria-label="Ver Ficha Contábil">Ficha Contábil</button>
                             </div>
                         </div>
 
-                        <div class="glass-card"
-                            style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <h4 style="font-weight: 600; font-size: 1.1rem; color: var(--accent-contador);">Comércio
+                        <div class="glass-card client-card">
+                            <div class="client-header">
+                                <h4 class="client-name text-contador">Comércio
                                     Silva ME</h4>
                                 <span class="status-badge status-warning">Lucro Presumido</span>
                             </div>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">CNPJ: 98.765.432/0001-10</p>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Categoria: Varejo</p>
-                            <div
-                                style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1rem; display: flex; gap: 0.5rem;">
-                                <button class="btn-secondary"
-                                    style="flex: 1; text-align: center; padding: 0.5rem;">Pasta</button>
-                                <button class="btn-secondary"
-                                    style="flex: 1; text-align: center; padding: 0.5rem;">Ficha Contábil</button>
+                            <p class="client-info">CNPJ: 98.765.432/0001-10</p>
+                            <p class="client-info">Categoria: Varejo</p>
+                            <div class="client-actions">
+                                <button class="btn-secondary flex-1 text-center p-half"
+                                    aria-label="Abrir Pasta">Pasta</button>
+                                <button class="btn-secondary flex-1 text-center p-half"
+                                    aria-label="Ver Ficha Contábil">Ficha Contábil</button>
                             </div>
                         </div>
                     </div>
@@ -216,43 +215,37 @@
 
                     <form onsubmit="event.preventDefault(); alert('Relatório Gerado e enviado para a Lista!');">
                         <div class="form-grid">
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Empresa
-                                    Cliente</label>
-                                <select required style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="cliente_select">Empresa Cliente</label>
+                                <select id="cliente_select" required class="w-full pl-4" aria-label="Empresa Cliente">
                                     <option value="">Selecione na sua Carteira...</option>
                                     <option value="1">Tech Nova LTDA</option>
                                     <option value="2">Comércio Silva ME</option>
                                 </select>
                             </div>
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Tipo
-                                    de Relatório</label>
-                                <select required style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="tipo_relatorio">Tipo de Relatório</label>
+                                <select id="tipo_relatorio" required class="w-full pl-4" aria-label="Tipo de Relatório">
                                     <option value="Balancete">Balancete Mensal</option>
                                     <option value="DRE">DRE</option>
                                     <option value="FluxoDeCaixa">Fluxo de Caixa Contábil</option>
                                 </select>
                             </div>
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Ano
-                                    de Referência</label>
-                                <input type="number" value="2026" required style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="ano_ref">Ano de Referência</label>
+                                <input id="ano_ref" type="number" value="2026" required class="w-full pl-4"
+                                    aria-label="Ano de Referência">
                             </div>
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Mês
-                                    Base (1 a 12)</label>
-                                <input type="number" min="1" max="12" required style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="mes_base">Mês Base (1 a 12)</label>
+                                <input id="mes_base" type="number" min="1" max="12" required class="w-full pl-4"
+                                    aria-label="Mês Base">
                             </div>
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn-secondary">Limpar</button>
-                            <button type="submit" class="btn-primary" style="background: var(--accent-contador);"><i
-                                    class="ph ph-printer"></i> Gerar Relatório</button>
+                            <button type="submit" class="btn-primary bg-contador"><i class="ph ph-printer"></i> Gerar
+                                Relatório</button>
                         </div>
                     </form>
                 </section>
@@ -262,7 +255,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="menu.js"></script>
+    <script src="../assets/js/menu.js"></script>
 </body>
 
 </html>

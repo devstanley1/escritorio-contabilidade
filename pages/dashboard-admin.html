@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
-    <div class="theme-toggle-wrapper" style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 1000;">
-        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema">
+    <div class="theme-toggle-wrapper fixed-top-right">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema" aria-label="Alternar Tema">
             <i class="ph ph-moon"></i>
         </button>
     </div>
@@ -22,7 +22,7 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo" onclick="window.location.href='index.html'">
+            <div class="sidebar-logo" onclick="window.location.href='../index.html'">
                 <i class="ph ph-shield-check"></i>
                 <span>Gestão Admin</span>
             </div>
@@ -55,7 +55,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="index.html" class="menu-item logout-btn">
+                <a href="../index.html" class="menu-item logout-btn">
                     <i class="ph ph-sign-out"></i>
                     <span>Sair do Sistema</span>
                 </a>
@@ -65,15 +65,15 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="mobile-header">
-                <div class="sidebar-logo" style="margin: 0; padding: 0; border: none;">
+                <div class="sidebar-logo m-0 p-0 border-none">
                     <i class="ph ph-shield-check"></i> Conta<span>Pro</span>
                 </div>
-                <button class="menu-toggle" id="menuToggle">
+                <button class="menu-toggle" id="menuToggle" aria-label="Alternar Menu">
                     <i class="ph ph-list"></i>
                 </button>
             </header>
 
-            <div class="glass-card" style="margin-top: 2rem;">
+            <div class="glass-card mt-2">
 
                 <!-- TAB: Visão Geral -->
                 <section id="visao-geral" class="tab-content active">
@@ -85,8 +85,8 @@
                     </div>
 
                     <div class="stats-grid">
-                        <div class="stat-card glass-card" style="padding: 1.25rem;">
-                            <div class="stat-icon" style="color: var(--accent-cliente);">
+                        <div class="stat-card glass-card p-5">
+                            <div class="stat-icon text-cliente">
                                 <i class="ph ph-currency-dollar"></i>
                             </div>
                             <div class="stat-info">
@@ -94,8 +94,8 @@
                                 <strong>R$ 85.000</strong>
                             </div>
                         </div>
-                        <div class="stat-card glass-card" style="padding: 1.25rem;">
-                            <div class="stat-icon" style="color: var(--brand-primary);">
+                        <div class="stat-card glass-card p-5">
+                            <div class="stat-icon text-primary">
                                 <i class="ph ph-users-three"></i>
                             </div>
                             <div class="stat-info">
@@ -103,8 +103,8 @@
                                 <strong>124</strong>
                             </div>
                         </div>
-                        <div class="stat-card glass-card" style="padding: 1.25rem;">
-                            <div class="stat-icon" style="color: var(--accent-admin);">
+                        <div class="stat-card glass-card p-5">
+                            <div class="stat-icon text-admin">
                                 <i class="ph ph-chart-pie-slice"></i>
                             </div>
                             <div class="stat-info">
@@ -115,7 +115,7 @@
                     </div>
 
                     <div class="table-container">
-                        <h3 style="margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600;">Performance por Contador
+                        <h3 class="table-title">Performance por Contador
                             (Top 3)</h3>
                         <table class="modern-table">
                             <thead>
@@ -160,8 +160,8 @@
                             <p>Gestão de Prazos e Obrigações Acessórias</p>
                         </div>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); padding: 3rem;">
-                        <i class="ph ph-hammer" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                    <div class="empty-state">
+                        <i class="ph ph-hammer empty-icon"></i>
                         <p>Módulo em implementação</p>
                     </div>
                 </section>
@@ -172,26 +172,22 @@
                             <h2>Equipe do Escritório</h2>
                             <p>Gerencie contadores, assistentes e atendentes</p>
                         </div>
-                        <button class="btn-primary" style="background: var(--accent-admin);"><i
-                                class="ph ph-user-plus"></i> Novo Membro</button>
+                        <button class="btn-primary bg-admin"><i class="ph ph-user-plus"></i> Novo Membro</button>
                     </div>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
-                        <div class="glass-card" style="padding: 1.5rem; text-align: center;">
-                            <div class="stat-icon"
-                                style="margin: 0 auto 1rem auto; width: 64px; height: 64px; border-radius: 50%; background: var(--hover-bg);">
-                                <i class="ph ph-user" style="font-size: 2rem; color: var(--accent-contador);"></i>
+                    <div class="grid-cards-lg">
+                        <div class="glass-card team-card">
+                            <div class="team-icon-wrapper">
+                                <i class="ph ph-user text-2xl text-contador"></i>
                             </div>
-                            <h4 style="font-weight: 600;">Carlos Mendes</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Contador Sênior</p>
+                            <h4 class="font-600">Carlos Mendes</h4>
+                            <p class="text-sm text-secondary">Contador Sênior</p>
                         </div>
-                        <div class="glass-card" style="padding: 1.5rem; text-align: center;">
-                            <div class="stat-icon"
-                                style="margin: 0 auto 1rem auto; width: 64px; height: 64px; border-radius: 50%; background: var(--hover-bg);">
-                                <i class="ph ph-user" style="font-size: 2rem; color: var(--accent-atendimento);"></i>
+                        <div class="glass-card team-card">
+                            <div class="team-icon-wrapper">
+                                <i class="ph ph-user text-2xl text-atendimento"></i>
                             </div>
-                            <h4 style="font-weight: 600;">Juliana Silva</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Recepção / Triagem</p>
+                            <h4 class="font-600">Juliana Silva</h4>
+                            <p class="text-sm text-secondary">Recepção / Triagem</p>
                         </div>
                     </div>
                 </section>
@@ -203,8 +199,8 @@
                             <p>Todos os clientes cadastrados na operação</p>
                         </div>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); padding: 3rem;">
-                        <i class="ph ph-buildings" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                    <div class="empty-state">
+                        <i class="ph ph-buildings empty-icon"></i>
                         <p>Base Completa (Carregando 124 Registros...)</p>
                     </div>
                 </section>
@@ -216,8 +212,8 @@
                             <p>Receitas de Honorários vs. Custos da Operação</p>
                         </div>
                     </div>
-                    <div style="text-align: center; color: var(--text-secondary); padding: 3rem;">
-                        <i class="ph ph-chart-line" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                    <div class="empty-state">
+                        <i class="ph ph-chart-line empty-icon"></i>
                         <p>Gráficos em Desenvolvimento para o DRE do Escritório</p>
                     </div>
                 </section>
@@ -231,23 +227,20 @@
                     </div>
                     <form onsubmit="event.preventDefault(); alert('Configurações Salvas!');">
                         <div class="form-grid">
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Nome
-                                    do Escritório</label>
-                                <input type="text" value="Contabilidade Pro Digital" required
-                                    style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="nome_escritorio">Nome do Escritório</label>
+                                <input id="nome_escritorio" type="text" value="Contabilidade Pro Digital" required
+                                    class="w-full pl-4" aria-label="Nome do Escritório">
                             </div>
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Dias
-                                    Úteis para SLA Padrão</label>
-                                <input type="number" value="3" required style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="dias_uteis">Dias Úteis para SLA Padrão</label>
+                                <input id="dias_uteis" type="number" value="3" required class="w-full pl-4"
+                                    aria-label="Dias Úteis para SLA">
                             </div>
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="btn-primary" style="background: var(--accent-admin);"><i
-                                    class="ph ph-floppy-disk"></i> Atualizar Configurações</button>
+                            <button type="submit" class="btn-primary bg-admin"><i class="ph ph-floppy-disk"></i>
+                                Atualizar Configurações</button>
                         </div>
                     </form>
                 </section>
@@ -257,7 +250,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="menu.js"></script>
+    <script src="../assets/js/menu.js"></script>
 </body>
 
 </html>

@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
-    <div class="theme-toggle-wrapper" style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 1000;">
-        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema">
+    <div class="theme-toggle-wrapper fixed-top-right">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema" aria-label="Alternar Tema">
             <i class="ph ph-moon"></i>
         </button>
     </div>
@@ -22,7 +22,7 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo" onclick="window.location.href='index.html'">
+            <div class="sidebar-logo" onclick="window.location.href='../index.html'">
                 <i class="ph ph-headset"></i>
                 <span>Atendimento</span>
             </div>
@@ -43,7 +43,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="index.html" class="menu-item logout-btn">
+                <a href="../index.html" class="menu-item logout-btn">
                     <i class="ph ph-sign-out"></i>
                     <span>Sair do Sistema</span>
                 </a>
@@ -53,15 +53,15 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="mobile-header">
-                <div class="sidebar-logo" style="margin: 0; padding: 0; border: none;">
+                <div class="sidebar-logo m-0 p-0 border-none">
                     <i class="ph ph-headset"></i> Conta<span>Pro</span>
                 </div>
-                <button class="menu-toggle" id="menuToggle">
+                <button class="menu-toggle" id="menuToggle" aria-label="Alternar Menu">
                     <i class="ph ph-list"></i>
                 </button>
             </header>
 
-            <div class="glass-card" style="margin-top: 2rem;">
+            <div class="glass-card mt-2">
 
                 <!-- TAB: Triagem -->
                 <section id="triagem" class="tab-content active">
@@ -86,28 +86,27 @@
                                 <tr>
                                     <td data-label="Empresa">
                                         <strong>#501 - Tech Nova</strong><br>
-                                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Há 15
-                                            minutos</span>
+                                        <span class="text-sm text-secondary">Há 15 minutos</span>
                                     </td>
                                     <td data-label="Assunto">Dúvida sobre NFS-e</td>
                                     <td data-label="Urgência"><span class="status-badge status-info">Normal</span></td>
                                     <td data-label="Ações">
-                                        <button class="btn-primary"
-                                            style="background: var(--accent-atendimento); padding: 0.5rem 1rem;"><i
-                                                class="ph ph-paper-plane-right"></i> Direcionar</button>
+                                        <button class="btn-primary bg-atendimento py-half-px-1"
+                                            aria-label="Direcionar Atendimento"><i class="ph ph-paper-plane-right"></i>
+                                            Direcionar</button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td data-label="Empresa">
                                         <strong>#502 - Comércio Silva</strong><br>
-                                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Há 1 hora</span>
+                                        <span class="text-sm text-secondary">Há 1 hora</span>
                                     </td>
                                     <td data-label="Assunto">Problema Certificado Digital</td>
                                     <td data-label="Urgência"><span class="status-badge status-danger">Alta</span></td>
                                     <td data-label="Ações">
-                                        <button class="btn-primary"
-                                            style="background: var(--accent-atendimento); padding: 0.5rem 1rem;"><i
-                                                class="ph ph-paper-plane-right"></i> Direcionar</button>
+                                        <button class="btn-primary bg-atendimento py-half-px-1"
+                                            aria-label="Direcionar Atendimento"><i class="ph ph-paper-plane-right"></i>
+                                            Direcionar</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -126,40 +125,33 @@
 
                     <form onsubmit="event.preventDefault(); alert('Empresa Cadastrada!');">
                         <div class="form-grid">
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Razão
-                                    Social</label>
-                                <input type="text" placeholder="Nome da Empresa" required
-                                    style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="razao_social">Razão Social</label>
+                                <input id="razao_social" type="text" placeholder="Nome da Empresa" required
+                                    class="w-full pl-4" aria-label="Razão Social">
                             </div>
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">CNPJ</label>
-                                <input type="text" placeholder="00.000.000/0001-00" required
-                                    style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="cnpj_empresa">CNPJ</label>
+                                <input id="cnpj_empresa" type="text" placeholder="00.000.000/0001-00" required
+                                    class="w-full pl-4" aria-label="CNPJ da Empresa">
                             </div>
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Plano
-                                    / Regime</label>
-                                <select required style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="plano_regime">Plano / Regime</label>
+                                <select id="plano_regime" required class="w-full pl-4" aria-label="Plano ou Regime">
                                     <option value="1">MEI (R$ 150/mês)</option>
                                     <option value="2">Simples Nacional (R$ 450/mês)</option>
                                     <option value="3">Lucro Presumido (R$ 1.200/mês)</option>
                                 </select>
                             </div>
-                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
-                                <label
-                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">E-mail
-                                    do Sócio</label>
-                                <input type="email" placeholder="contato@empresa.com" required
-                                    style="width: 100%; padding-left: 1rem;">
+                            <div class="input-group flex-col items-start">
+                                <label class="form-label" for="email_socio">E-mail do Sócio</label>
+                                <input id="email_socio" type="email" placeholder="contato@empresa.com" required
+                                    class="w-full pl-4" aria-label="E-mail do Sócio">
                             </div>
                         </div>
                         <div class="form-actions">
-                            <button type="submit" class="btn-primary" style="background: var(--accent-atendimento);"><i
-                                    class="ph ph-floppy-disk"></i> Salvar Cliente</button>
+                            <button type="submit" class="btn-primary bg-atendimento"><i class="ph ph-floppy-disk"></i>
+                                Salvar Cliente</button>
                         </div>
                     </form>
                 </section>
@@ -173,32 +165,29 @@
                         </div>
                     </div>
 
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-                        <div class="glass-card"
-                            style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; border-left: 4px solid var(--accent-cliente);">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <h4 style="font-weight: 600; font-size: 1.1rem;">Tech Nova LTDA</h4>
+                    <div class="grid-cards-xl">
+                        <div class="glass-card client-card border-l-cliente">
+                            <div class="client-header">
+                                <h4 class="font-600 text-xl">Tech Nova LTDA</h4>
                                 <span class="status-badge status-success">Em dia</span>
                             </div>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Mensalidade: R$ 450,00</p>
-                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                                <button class="btn-secondary" style="flex: 1; padding: 0.5rem;"><i
+                            <p class="client-info">Mensalidade: R$ 450,00</p>
+                            <div class="client-actions">
+                                <button class="btn-secondary flex-1 p-half" aria-label="Baixar Recibo"><i
                                         class="ph ph-download-simple"></i> Recibo</button>
                             </div>
                         </div>
 
-                        <div class="glass-card"
-                            style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; border-left: 4px solid #ef4444;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <h4 style="font-weight: 600; font-size: 1.1rem;">Comércio Silva</h4>
+                        <div class="glass-card client-card border-l-danger">
+                            <div class="client-header">
+                                <h4 class="font-600 text-xl">Comércio Silva</h4>
                                 <span class="status-badge status-danger">Inadimplente</span>
                             </div>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Mensalidade: R$ 1.200,00</p>
-                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                                <button class="btn-primary"
-                                    style="background: var(--accent-atendimento); flex: 1; padding: 0.5rem;"><i
-                                        class="ph ph-paper-plane-tilt"></i> Cobrar via WhatsApp</button>
+                            <p class="client-info">Mensalidade: R$ 1.200,00</p>
+                            <div class="client-actions">
+                                <button class="btn-primary bg-atendimento flex-1 p-half"
+                                    aria-label="Cobrar via WhatsApp"><i class="ph ph-paper-plane-tilt"></i> Cobrar via
+                                    WhatsApp</button>
                             </div>
                         </div>
                     </div>
@@ -209,7 +198,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="menu.js"></script>
+    <script src="../assets/js/menu.js"></script>
 </body>
 
 </html>

@@ -11,12 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
-    <div class="theme-toggle-wrapper">
-        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema">
+    <div class="theme-toggle-wrapper fixed-top-right">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema" aria-label="Alternar Tema">
             <i class="ph ph-moon"></i>
         </button>
     </div>
@@ -40,31 +40,34 @@
 
                 <form class="login-form" onsubmit="event.preventDefault();">
                     <div class="input-group">
+                        <label for="email_login" class="visually-hidden">E-mail de acesso</label>
                         <i class="ph ph-envelope-simple"></i>
-                        <input type="email" placeholder="E-mail de acesso" required>
+                        <input id="email_login" type="email" placeholder="E-mail de acesso" required
+                            aria-label="E-mail">
                     </div>
                     <div class="input-group">
+                        <label for="senha_login" class="visually-hidden">Senha</label>
                         <i class="ph ph-lock-key"></i>
-                        <input type="password" placeholder="Senha" required>
+                        <input id="senha_login" type="password" placeholder="Senha" required aria-label="Senha">
                     </div>
 
                     <div class="login-actions">
                         <p class="section-title">Acessar Painel Simulativo:</p>
                         <div class="roles-grid">
                             <button type="button" class="btn-role btn-cliente"
-                                onclick="window.location.href='dashboard-cliente.html'">
+                                onclick="window.location.href='pages/dashboard-cliente.html'">
                                 <i class="ph ph-user"></i> Cliente
                             </button>
                             <button type="button" class="btn-role btn-contador"
-                                onclick="window.location.href='dashboard-contador.html'">
+                                onclick="window.location.href='pages/dashboard-contador.html'">
                                 <i class="ph ph-calculator"></i> Contador
                             </button>
                             <button type="button" class="btn-role btn-atendimento"
-                                onclick="window.location.href='dashboard-atendimento.html'">
+                                onclick="window.location.href='pages/dashboard-atendimento.html'">
                                 <i class="ph ph-headset"></i> Atendimento
                             </button>
                             <button type="button" class="btn-role btn-admin"
-                                onclick="window.location.href='dashboard-admin.html'">
+                                onclick="window.location.href='pages/dashboard-admin.html'">
                                 <i class="ph ph-chart-pie-slice"></i> Admin
                             </button>
                         </div>
@@ -75,7 +78,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="menu.js"></script>
+    <script src="assets/js/menu.js"></script>
 </body>
 
 </html>
