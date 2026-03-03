@@ -452,7 +452,6 @@ a {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    flex: 1;
 }
 
 .menu-item {
@@ -485,7 +484,7 @@ a {
 }
 
 .sidebar-footer {
-    margin-top: auto;
+    margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--glass-border);
 }
@@ -826,14 +825,6 @@ a {
 
     .glass-card {
         padding: 1.5rem;
-    }
-
-    .sidebar-footer {
-        margin-top: 2rem;
-    }
-
-    .sidebar-menu {
-        flex: none;
     }
 
     /* Transform Native Tables into Cards */
