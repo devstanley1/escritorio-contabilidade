@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Contador - Contabilidade</title>
+    <!-- Fonte Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="theme-toggle-wrapper" style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 1000;">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema">
+            <i class="ph ph-moon"></i>
+        </button>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo" onclick="window.location.href='index.html'">
+                <i class="ph ph-calculator"></i>
+                <span>Contador</span>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a class="menu-item active" data-target="dashboard-resumo">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a class="menu-item" data-target="meus-clientes">
+                    <i class="ph ph-users-three"></i>
+                    <span>Meus Clientes</span>
+                </a>
+                <a class="menu-item" data-target="relatorios">
+                    <i class="ph ph-chart-bar"></i>
+                    <span>Relatórios Contábeis</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="index.html" class="menu-item logout-btn">
+                    <i class="ph ph-sign-out"></i>
+                    <span>Sair do Sistema</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="mobile-header">
+                <div class="sidebar-logo" style="margin: 0; padding: 0; border: none;">
+                    <i class="ph ph-calculator"></i> Conta<span>Pro</span>
+                </div>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="ph ph-list"></i>
+                </button>
+            </header>
+
+            <div class="glass-card" style="margin-top: 2rem;">
+
+                <!-- TAB: Dashboard / Resumo -->
+                <section id="dashboard-resumo" class="tab-content active">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">
+                            <h2>Olá, Contador(a)</h2>
+                            <p>Resumo das suas obrigações e clientes ativos</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card glass-card" style="padding: 1.25rem;">
+                            <div class="stat-icon" style="color: var(--accent-contador);">
+                                <i class="ph ph-files"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span>Declarações Pendentes</span>
+                                <strong>12</strong>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card" style="padding: 1.25rem;">
+                            <div class="stat-icon" style="color: var(--brand-primary);">
+                                <i class="ph ph-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span>Carteira de Clientes</span>
+                                <strong>45 empresas</strong>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card" style="padding: 1.25rem;">
+                            <div class="stat-icon" style="color: var(--accent-cliente);">
+                                <i class="ph ph-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span>Impostos Fechados</span>
+                                <strong>33 / 45</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h3 style="margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600;">Obrigações da Semana
+                            (Simples e Presumido)</h3>
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Empresa</th>
+                                    <th>Obrigação</th>
+                                    <th>Prazo</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Empresa">Tech Nova LTDA</td>
+                                    <td data-label="Obrigação">Fechamento do DAS</td>
+                                    <td data-label="Prazo">15/05/2026</td>
+                                    <td data-label="Status"><span class="status-badge status-warning">Pendente</span>
+                                    </td>
+                                    <td data-label="Ações"><button class="btn-secondary"
+                                            style="padding: 0.5rem 1rem;"><i class="ph ph-paper-plane-right"></i>
+                                            Processar</button></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Empresa">Comércio Silva ME</td>
+                                    <td data-label="Obrigação">SPED Fiscal</td>
+                                    <td data-label="Prazo">12/05/2026</td>
+                                    <td data-label="Status"><span class="status-badge status-danger">Atrazo (2
+                                            dias)</span></td>
+                                    <td data-label="Ações"><button class="btn-secondary"
+                                            style="padding: 0.5rem 1rem;"><i class="ph ph-warning-circle"></i>
+                                            Notificar</button></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Empresa">Consultoria RH S/A</td>
+                                    <td data-label="Obrigação">Folha - eSocial</td>
+                                    <td data-label="Prazo">07/05/2026</td>
+                                    <td data-label="Status"><span class="status-badge status-success">Transmisido</span>
+                                    </td>
+                                    <td data-label="Ações"><button class="btn-secondary"
+                                            style="padding: 0.5rem 1rem;"><i class="ph ph-eye"></i> Recibo</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB: Meus Clientes -->
+                <section id="meus-clientes" class="tab-content">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">
+                            <h2>Carteira de Clientes</h2>
+                            <p>Gestão e Ficha das Empresas Associadas</p>
+                        </div>
+                        <div class="dashboard-header-actions">
+                            <div class="input-group" style="width: 250px;">
+                                <i class="ph ph-magnifying-glass"></i>
+                                <input type="text" placeholder="Buscar CNPJ ou Razão...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <div class="glass-card"
+                            style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <h4 style="font-weight: 600; font-size: 1.1rem; color: var(--accent-contador);">Tech
+                                    Nova LTDA</h4>
+                                <span class="status-badge status-info">Simples</span>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">CNPJ: 12.345.678/0001-90</p>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Categoria: Desenvolvimento</p>
+                            <div
+                                style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1rem; display: flex; gap: 0.5rem;">
+                                <button class="btn-secondary"
+                                    style="flex: 1; text-align: center; padding: 0.5rem;">Pasta</button>
+                                <button class="btn-secondary"
+                                    style="flex: 1; text-align: center; padding: 0.5rem;">Ficha Contábil</button>
+                            </div>
+                        </div>
+
+                        <div class="glass-card"
+                            style="padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <h4 style="font-weight: 600; font-size: 1.1rem; color: var(--accent-contador);">Comércio
+                                    Silva ME</h4>
+                                <span class="status-badge status-warning">Lucro Presumido</span>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">CNPJ: 98.765.432/0001-10</p>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">Categoria: Varejo</p>
+                            <div
+                                style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1rem; display: flex; gap: 0.5rem;">
+                                <button class="btn-secondary"
+                                    style="flex: 1; text-align: center; padding: 0.5rem;">Pasta</button>
+                                <button class="btn-secondary"
+                                    style="flex: 1; text-align: center; padding: 0.5rem;">Ficha Contábil</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: Relatórios -->
+                <section id="relatorios" class="tab-content">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">
+                            <h2>Relatórios Contábeis</h2>
+                            <p>Emissão de Balancetes e DREs</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); alert('Relatório Gerado e enviado para a Lista!');">
+                        <div class="form-grid">
+                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
+                                <label
+                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Empresa
+                                    Cliente</label>
+                                <select required style="width: 100%; padding-left: 1rem;">
+                                    <option value="">Selecione na sua Carteira...</option>
+                                    <option value="1">Tech Nova LTDA</option>
+                                    <option value="2">Comércio Silva ME</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
+                                <label
+                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Tipo
+                                    de Relatório</label>
+                                <select required style="width: 100%; padding-left: 1rem;">
+                                    <option value="Balancete">Balancete Mensal</option>
+                                    <option value="DRE">DRE</option>
+                                    <option value="FluxoDeCaixa">Fluxo de Caixa Contábil</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
+                                <label
+                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Ano
+                                    de Referência</label>
+                                <input type="number" value="2026" required style="width: 100%; padding-left: 1rem;">
+                            </div>
+                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
+                                <label
+                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Mês
+                                    Base (1 a 12)</label>
+                                <input type="number" min="1" max="12" required style="width: 100%; padding-left: 1rem;">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary">Limpar</button>
+                            <button type="submit" class="btn-primary" style="background: var(--accent-contador);"><i
+                                    class="ph ph-printer"></i> Gerar Relatório</button>
+                        </div>
+                    </form>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="menu.js"></script>
+</body>
+
+</html>

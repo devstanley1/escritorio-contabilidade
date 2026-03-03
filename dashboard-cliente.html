@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Cliente - Contabilidade</title>
+    <!-- Fonte Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="theme-toggle-wrapper" style="position: fixed; top: 1.5rem; right: 1.5rem;">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema">
+            <i class="ph ph-moon"></i>
+        </button>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo" onclick="window.location.href='index.html'">
+                <i class="ph ph-buildings"></i>
+                <span>Contabilidade</span>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a class="menu-item active" data-target="minhas-solicitacoes">
+                    <i class="ph ph-receipt"></i>
+                    <span>Minhas Solicitações</span>
+                </a>
+                <a class="menu-item" data-target="nova-solicitacao">
+                    <i class="ph ph-plus-circle"></i>
+                    <span>Nova Solicitação</span>
+                </a>
+                <a class="menu-item" data-target="meus-documentos">
+                    <i class="ph ph-folder-open"></i>
+                    <span>Meus Documentos</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="index.html" class="menu-item logout-btn">
+                    <i class="ph ph-sign-out"></i>
+                    <span>Sair do Sistema</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="mobile-header">
+                <div class="sidebar-logo" style="margin: 0; padding: 0; border: none;">
+                    <i class="ph ph-buildings"></i> Conta<span>Pro</span>
+                </div>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="ph ph-list"></i>
+                </button>
+            </header>
+
+            <div class="glass-card" style="margin-top: 2rem;">
+
+                <!-- TAB: Minhas Solicitações -->
+                <section id="minhas-solicitacoes" class="tab-content active">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">
+                            <h2>Minhas Solicitações</h2>
+                            <p>Acompanhe suas guias, impostos e certidões</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card glass-card" style="padding: 1.25rem;">
+                            <div class="stat-icon" style="color: var(--accent-cliente);">
+                                <i class="ph ph-clock-countdown"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span>Pendentes</span>
+                                <strong>2</strong>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card" style="padding: 1.25rem;">
+                            <div class="stat-icon" style="color: var(--brand-primary);">
+                                <i class="ph ph-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span>Concluídas (Mês)</span>
+                                <strong>5</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Descrição / Guia</th>
+                                    <th>Vencimento</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="ID">#1024</td>
+                                    <td data-label="Descrição">Guia DAS (Simples Nacional)</td>
+                                    <td data-label="Vencimento">20/05/2026</td>
+                                    <td data-label="Status"><span class="status-badge status-warning">Aguardando
+                                            Pagamento</span></td>
+                                    <td data-label="Ações"><button class="btn-secondary"
+                                            style="padding: 0.5rem 1rem;"><i class="ph ph-download-simple"></i>
+                                            Baixar</button></td>
+                                </tr>
+                                <tr>
+                                    <td data-label="ID">#1023</td>
+                                    <td data-label="Descrição">Folha de Pagamento - Abril</td>
+                                    <td data-label="Vencimento">05/05/2026</td>
+                                    <td data-label="Status"><span class="status-badge status-success">Concluído</span>
+                                    </td>
+                                    <td data-label="Ações"><button class="btn-secondary"
+                                            style="padding: 0.5rem 1rem;"><i class="ph ph-eye"></i> Ver</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB: Nova Solicitação -->
+                <section id="nova-solicitacao" class="tab-content">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">
+                            <h2>Nova Solicitação</h2>
+                            <p>Abra um chamado ou solicite um serviço contábil</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); alert('Solicitação enviada com sucesso!');">
+                        <div class="form-grid">
+                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
+                                <label
+                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Tipo
+                                    de Serviço</label>
+                                <select required style="width: 100%; padding-left: 1rem;">
+                                    <option value="">Selecione...</option>
+                                    <option value="1">Emissão de Certidão Negativa</option>
+                                    <option value="2">Dúvida sobre Imposto</option>
+                                    <option value="3">Admissão de Funcionário</option>
+                                    <option value="4">Demissão de Funcionário</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="flex-direction: column; align-items: flex-start;">
+                                <label
+                                    style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Urgência</label>
+                                <select required style="width: 100%; padding-left: 1rem;">
+                                    <option value="Normal">Normal</option>
+                                    <option value="Alta">Alta (Sujeito a taxa)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group" style="flex-direction: column; align-items: flex-start;">
+                            <label
+                                style="margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Detalhes
+                                da Solicitação</label>
+                            <textarea placeholder="Descreva o que você precisa..." required
+                                style="width: 100%; padding-left: 1rem;"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary"
+                                onclick="document.querySelector('.menu-item[data-target=\'minhas-solicitacoes\']').click()">Cancelar</button>
+                            <button type="submit" class="btn-primary" style="background: var(--accent-cliente);"><i
+                                    class="ph ph-paper-plane-tilt"></i> Enviar Solicitação</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- TAB: Meus Documentos -->
+                <section id="meus-documentos" class="tab-content">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">
+                            <h2>Meus Documentos</h2>
+                            <p>Arquivos da Empresa, Balanços, Contratos</p>
+                        </div>
+                        <button class="btn-primary" style="background: var(--accent-cliente);"><i
+                                class="ph ph-upload-simple"></i> Enviar Arquivo</button>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+                        <div class="glass-card"
+                            style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.3s;">
+                            <i class="ph ph-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                            <h4 style="font-weight: 500; font-size: 1rem;">Contrato Social</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">Atualizado em 2024</p>
+                        </div>
+                        <div class="glass-card"
+                            style="padding: 1.5rem; text-align: center; cursor: pointer; transition: transform 0.3s;">
+                            <i class="ph ph-file-xls"
+                                style="font-size: 3rem; color: var(--accent-cliente); margin-bottom: 1rem;"></i>
+                            <h4 style="font-weight: 500; font-size: 1rem;">Balanço 2025</h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">Gerado em Março</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="menu.js"></script>
+</body>
+
+</html>

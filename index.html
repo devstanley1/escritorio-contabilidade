@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Contábil - Premium</title>
+    <!-- Fonte Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="theme-toggle-wrapper">
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Alternar Tema">
+            <i class="ph ph-moon"></i>
+        </button>
+    </div>
+
+    <div class="app-container">
+        <!-- Landing Page e Login Section -->
+        <main class="landing-main">
+            <div class="glass-card login-container">
+                <div class="brand">
+                    <i class="ph ph-buildings brand-icon"></i>
+                    <h1>Contabilidade<span>Pro</span></h1>
+                    <p>Gestão Empresarial Inteligente</p>
+                </div>
+
+                <div class="services-overview">
+                    <div class="service-tag"><i class="ph ph-briefcase"></i> Abertura de Empresa</div>
+                    <div class="service-tag"><i class="ph ph-file-text"></i> Imposto de Renda</div>
+                    <div class="service-tag"><i class="ph ph-users"></i> Gestão de Folha</div>
+                    <div class="service-tag"><i class="ph ph-chart-line-up"></i> Planejamento Tributário</div>
+                </div>
+
+                <form class="login-form" onsubmit="event.preventDefault();">
+                    <div class="input-group">
+                        <i class="ph ph-envelope-simple"></i>
+                        <input type="email" placeholder="E-mail de acesso" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="ph ph-lock-key"></i>
+                        <input type="password" placeholder="Senha" required>
+                    </div>
+
+                    <div class="login-actions">
+                        <p class="section-title">Acessar Painel Simulativo:</p>
+                        <div class="roles-grid">
+                            <button type="button" class="btn-role btn-cliente"
+                                onclick="window.location.href='dashboard-cliente.html'">
+                                <i class="ph ph-user"></i> Cliente
+                            </button>
+                            <button type="button" class="btn-role btn-contador"
+                                onclick="window.location.href='dashboard-contador.html'">
+                                <i class="ph ph-calculator"></i> Contador
+                            </button>
+                            <button type="button" class="btn-role btn-atendimento"
+                                onclick="window.location.href='dashboard-atendimento.html'">
+                                <i class="ph ph-headset"></i> Atendimento
+                            </button>
+                            <button type="button" class="btn-role btn-admin"
+                                onclick="window.location.href='dashboard-admin.html'">
+                                <i class="ph ph-chart-pie-slice"></i> Admin
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="menu.js"></script>
+</body>
+
+</html>
