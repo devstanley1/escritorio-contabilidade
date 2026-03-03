@@ -832,6 +832,10 @@ a {
         margin-top: 2rem;
     }
 
+    .sidebar-menu {
+        flex: none;
+    }
+
     /* Transform Native Tables into Cards */
     table.modern-table,
     table.modern-table tbody,
