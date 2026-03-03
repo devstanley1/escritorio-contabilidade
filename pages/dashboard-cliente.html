@@ -10,6 +10,12 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- Script para evitar Flash de Tema (FOUC) -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
 </head>
 
 <body>
@@ -53,12 +59,12 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="mobile-header">
-                <div class="sidebar-logo m-0 p-0 border-none">
-                    <i class="ph ph-buildings"></i> Conta<span>Pro</span>
-                </div>
                 <button class="menu-toggle" id="menuToggle" aria-label="Alternar Menu">
                     <i class="ph ph-list"></i>
                 </button>
+                <div class="sidebar-logo m-0 p-0 border-none">
+                    <i class="ph ph-buildings"></i> Conta<span>Pro</span>
+                </div>
             </header>
 
             <div class="glass-card mt-2">

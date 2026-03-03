@@ -83,7 +83,6 @@ a {
     min-height: 100vh;
     width: 100%;
     position: relative;
-    z-index: 1;
 }
 
 /* === THEME TOGGLE === */
@@ -375,7 +374,7 @@ a {
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 100;
+    z-index: 1005;
     transition: var(--transition-smooth);
 }
 
@@ -384,14 +383,14 @@ a {
     margin-left: 280px;
     padding: 2rem;
     transition: var(--transition-smooth);
-    width: calc(100% - 280px);
     min-height: 100vh;
+    max-width: calc(100vw - 280px);
 }
 
 .mobile-header {
     display: none;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 1rem 1.5rem;
     background: var(--glass-bg);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -400,6 +399,7 @@ a {
     position: sticky;
     top: 0;
     z-index: 90;
+    min-height: 70px;
 }
 
 .menu-toggle {
@@ -729,7 +729,9 @@ a {
 }
 
 @media (max-width: 768px) {
-    .form-grid {
+
+    .form-grid,
+    .roles-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -764,10 +766,8 @@ a {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 95;
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    background: transparent;
+    z-index: 1004;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -789,6 +789,7 @@ a {
     .main-content {
         margin-left: 0;
         width: 100%;
+        max-width: 100vw;
         padding: 1rem;
     }
 
@@ -796,8 +797,35 @@ a {
         display: flex;
     }
 
+    .mobile-header .menu-toggle {
+        position: absolute;
+        left: 1.5rem;
+    }
+
+    .mobile-header .sidebar-logo {
+        margin: 0 auto !important;
+        padding: 0 !important;
+        border: none !important;
+        margin-bottom: 0 !important;
+    }
+
+    .fixed-top-right {
+        top: 0.8rem;
+        right: 1rem;
+    }
+
+    .theme-toggle-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+
+    .glass-card {
+        padding: 1.5rem;
     }
 
     /* Transform Native Tables into Cards */
@@ -849,6 +877,29 @@ a {
 }
 
 /* === UTILITIES (Fixes for Inline Styles & Lint) === */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 480px) {
+    .brand h1 {
+        font-size: 1.8rem;
+    }
+
+    .service-tag {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+
 .fixed-top-right {
     position: fixed;
     top: 1.5rem;
