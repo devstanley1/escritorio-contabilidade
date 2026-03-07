@@ -16,7 +16,11 @@ WITH admin_user AS (
             updated_at,
             raw_app_meta_data,
             raw_user_meta_data,
-            is_super_admin
+            is_super_admin,
+            confirmation_token,
+            recovery_token,
+            email_change_token_new,
+            email_change
         )
     VALUES (
             '00000000-0000-0000-0000-000000000000',
@@ -30,7 +34,11 @@ WITH admin_user AS (
             now(),
             '{"provider":"email","providers":["email"]}',
             '{}',
-            false
+            false,
+            '',
+            '',
+            '',
+            ''
         )
     RETURNING id
 )
@@ -55,7 +63,11 @@ WITH contador_user AS (
             updated_at,
             raw_app_meta_data,
             raw_user_meta_data,
-            is_super_admin
+            is_super_admin,
+            confirmation_token,
+            recovery_token,
+            email_change_token_new,
+            email_change
         )
     VALUES (
             '00000000-0000-0000-0000-000000000000',
@@ -69,7 +81,11 @@ WITH contador_user AS (
             now(),
             '{"provider":"email","providers":["email"]}',
             '{}',
-            false
+            false,
+            '',
+            '',
+            '',
+            ''
         )
     RETURNING id
 )
@@ -94,7 +110,11 @@ WITH atendimento_user AS (
             updated_at,
             raw_app_meta_data,
             raw_user_meta_data,
-            is_super_admin
+            is_super_admin,
+            confirmation_token,
+            recovery_token,
+            email_change_token_new,
+            email_change
         )
     VALUES (
             '00000000-0000-0000-0000-000000000000',
@@ -108,7 +128,11 @@ WITH atendimento_user AS (
             now(),
             '{"provider":"email","providers":["email"]}',
             '{}',
-            false
+            false,
+            '',
+            '',
+            '',
+            ''
         )
     RETURNING id
 )
@@ -133,7 +157,11 @@ WITH cliente_user AS (
             updated_at,
             raw_app_meta_data,
             raw_user_meta_data,
-            is_super_admin
+            is_super_admin,
+            confirmation_token,
+            recovery_token,
+            email_change_token_new,
+            email_change
         )
     VALUES (
             '00000000-0000-0000-0000-000000000000',
@@ -147,7 +175,11 @@ WITH cliente_user AS (
             now(),
             '{"provider":"email","providers":["email"]}',
             '{}',
-            false
+            false,
+            '',
+            '',
+            '',
+            ''
         )
     RETURNING id
 )

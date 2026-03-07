@@ -118,6 +118,9 @@ ALTER TABLE public.empresas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.solicitacoes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.documentos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.obrigacoes ENABLE ROW LEVEL SECURITY;
+-- POLÍTICA DO LOGIN: "Usuários podem ler o próprio perfil para saber o seu Cargo"
+CREATE POLICY "Ler próprio Perfil" ON public.profiles FOR
+SELECT USING (auth.uid() = id);
 -- EXEMPLO DE POLÍTICA: "Clientes só veem suas próprias Empresas"
 CREATE POLICY "Visualizar próprias Empresas" ON public.empresas FOR
 SELECT USING (auth.uid() = cliente_id);
