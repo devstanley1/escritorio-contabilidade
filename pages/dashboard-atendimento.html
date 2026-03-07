@@ -88,32 +88,10 @@
                                     <th>Ações</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="triagem-tbody">
                                 <tr>
-                                    <td data-label="Empresa">
-                                        <strong>#501 - Tech Nova</strong><br>
-                                        <span class="text-sm text-secondary">Há 15 minutos</span>
-                                    </td>
-                                    <td data-label="Assunto">Dúvida sobre NFS-e</td>
-                                    <td data-label="Urgência"><span class="status-badge status-info">Normal</span></td>
-                                    <td data-label="Ações">
-                                        <button class="btn-primary bg-atendimento py-half-px-1"
-                                            aria-label="Direcionar Atendimento"><i class="ph ph-paper-plane-right"></i>
-                                            Direcionar</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Empresa">
-                                        <strong>#502 - Comércio Silva</strong><br>
-                                        <span class="text-sm text-secondary">Há 1 hora</span>
-                                    </td>
-                                    <td data-label="Assunto">Problema Certificado Digital</td>
-                                    <td data-label="Urgência"><span class="status-badge status-danger">Alta</span></td>
-                                    <td data-label="Ações">
-                                        <button class="btn-primary bg-atendimento py-half-px-1"
-                                            aria-label="Direcionar Atendimento"><i class="ph ph-paper-plane-right"></i>
-                                            Direcionar</button>
-                                    </td>
+                                    <td colspan="4" class="text-center text-secondary py-2"><i
+                                            class="ph ph-spinner ph-spin"></i> Carregando fila de chamados...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -136,10 +114,12 @@
                                 <input id="razao_social" type="text" placeholder="Nome da Empresa" required
                                     class="w-full pl-4" aria-label="Razão Social">
                             </div>
-                            <div class="input-group flex-col items-start">
+                            <div class="input-group flex-col items-start w-full relative">
                                 <label class="form-label" for="cnpj_empresa">CNPJ</label>
                                 <input id="cnpj_empresa" type="text" placeholder="00.000.000/0001-00" required
-                                    class="w-full pl-4" aria-label="CNPJ da Empresa">
+                                    class="w-full pl-4 pr-10" aria-label="CNPJ da Empresa" maxlength="18">
+                                <i id="cnpj-loading"
+                                    class="ph ph-spinner ph-spin text-primary absolute right-3 top-10 hidden"></i>
                             </div>
                             <div class="input-group flex-col items-start">
                                 <label class="form-label" for="plano_regime">Plano / Regime</label>
@@ -205,6 +185,162 @@
 
     <!-- Scripts -->
     <script src="../assets/js/menu.js"></script>
+
+    <!-- Supabase CDN & Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabaseClient.js"></script>
+
+    <script>
+        let currentUserId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initAtendimentoDashboard();
+        });
+
+        async function initAtendimentoDashboard() {
+            // Verifica a sessão
+            const { data: { session }, error: sessionError } = await window.db.supabase.auth.getSession();
+            if (!session || sessionError) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            currentUserId = session.user.id;
+
+            // Verifica Permissões
+            const { data: profileObj, error: profileError } = await window.db.supabase
+                .from('profiles')
+                .select('role, nome')
+                .eq('id', currentUserId)
+                .single();
+
+            if (profileError || !profileObj || profileObj.role !== 'atendimento') {
+                alert('Acesso negado: Apenas o setor de Atendimento pode ver este painel.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            await loadFilaChamados();
+        }
+
+        async function loadFilaChamados() {
+            const tbody = document.getElementById('triagem-tbody');
+            const data = await window.db.getTodasSolicitacoes();
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-2">Nenhum chamado aberto! Fila limpa. <i class="ph ph-sparkle text-success"></i></td></tr>';
+                return;
+            }
+
+            // Filtra só os que não foram concluídos
+            const abertos = data.filter(c => c.status !== 'Concluído');
+
+            if (abertos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-2">Todos os chamados foram concluídos!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            abertos.forEach(chamado => {
+                let statusBadge = 'status-info'; // Normal
+                if (chamado.urgencia === 'Alta') statusBadge = 'status-danger';
+                if (chamado.urgencia === 'Baixa') statusBadge = 'status-success';
+
+                // Trata caso a empresa tenha sido apagada (LEFT JOIN retorna null)
+                const nomeEmpresa = chamado.empresa ? chamado.empresa.razao_social : 'Cliente Sem Empresa';
+                const horaFormatada = new Date(chamado.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Empresa">
+                        <strong>#${chamado.id.split('-')[0].substring(0, 4)} - ${nomeEmpresa}</strong><br>
+                        <span class="text-sm text-secondary">Aberto às ${horaFormatada}</span>
+                    </td>
+                    <td data-label="Assunto">${chamado.tipo_servico} - <span class="text-sm">${chamado.status}</span></td>
+                    <td data-label="Urgência"><span class="status-badge ${statusBadge}">${chamado.urgencia}</span></td>
+                    <td data-label="Ações">
+                        <button class="btn-primary bg-atendimento py-half-px-1"
+                            aria-label="Atender" onclick="atenderChamado('${chamado.id}', '${chamado.status}')">
+                            <i class="ph ph-paper-plane-right"></i> Direcionar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function atenderChamado(id, statusAtual) {
+            const nextStatus = statusAtual === 'Pendente' ? 'Em Andamento' : 'Concluído';
+            const msg = `Mudar o status deste chamado para ${nextStatus}?`;
+            if (confirm(msg)) {
+                const res = await window.db.atualizarStatusSolicitacao(id, nextStatus);
+                if (res) {
+                    await loadFilaChamados();
+                } else {
+                    alert('Erro ao atualizar chamado.');
+                }
+            }
+        }
+
+        // ==========================================
+        // INTEGRAÇÃO DE API: BUSCA DE CNPJ (BrasilAPI)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const cnpjInput = document.getElementById('cnpj_empresa');
+
+            if (cnpjInput) {
+                // Máscara simples de CNPJ enquanto digita
+                cnpjInput.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 14) value = value.slice(0, 14);
+
+                    value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                    value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                    value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                    value = value.replace(/(\d{4})(\d)/, '$1-$2');
+
+                    e.target.value = value;
+                });
+
+                // Busca automatizada ao sair do campo (blur)
+                cnpjInput.addEventListener('blur', async function (e) {
+                    // Limpa formatação para a requisição
+                    const cleanCnpj = e.target.value.replace(/\D/g, '');
+
+                    if (cleanCnpj.length === 14) {
+                        const loader = document.getElementById('cnpj-loading');
+                        const razaoSocialInput = document.getElementById('razao_social');
+
+                        // Mostra o loading icon
+                        loader.classList.remove('hidden');
+                        razaoSocialInput.value = 'Buscando...';
+                        razaoSocialInput.disabled = true;
+
+                        try {
+                            const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`);
+                            if (!response.ok) throw new Error('CNPJ não encontrado ou inválido.');
+
+                            const data = await response.json();
+
+                            // Popula o campo da Razão Social
+                            razaoSocialInput.value = data.razao_social;
+
+                            // Opcional: Se a natureza jurídica ou CNAE indicarem um porte, 
+                            // poderíamos auto-sugerir o select "plano_regime" aqui.
+
+                        } catch (error) {
+                            console.error('Erro na API de CNPJ:', error);
+                            razaoSocialInput.value = '';
+                            alert('Aviso: Não foi possível buscar o CNPJ automaticamente (' + error.message + '). Preencha a Razão Social manualmente.');
+                        } finally {
+                            loader.classList.add('hidden');
+                            razaoSocialInput.disabled = false;
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

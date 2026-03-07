@@ -34,6 +34,25 @@ async function getSolicitacoes(empresaId) {
 }
 
 /**
+ * SELECT GLOBAL (ATENDIMENTO): Busca TODAS as solicitações
+ */
+async function getTodasSolicitacoes() {
+    const { data, error } = await supabaseClient
+        .from('solicitacoes')
+        .select(`
+            *,
+            empresa:empresas(razao_social)
+        `)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Erro ao buscar as solicitações globais:', error);
+        return null;
+    }
+    return data;
+}
+
+/**
  * INSERT: Cria uma nova solicitação no banco
  */
 async function criarSolicitacao(empresaId, solicitanteId, tipoServico, urgencia, detalhes) {
@@ -138,14 +157,102 @@ async function cadastrarEmpresa(razaoSocial, cnpj, regime) {
     return data;
 }
 
+// --- 3. DOCUMENTOS ---
+
+/**
+ * SELECT: Busca os documentos pertencentes a uma empresa
+ */
+async function getDocumentos(empresaId) {
+    const { data, error } = await supabaseClient
+        .from('documentos')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Erro ao buscar documentos:', error);
+        return null;
+    }
+    return data;
+}
+
+// --- 5. OBRIGAÇÕES FISCAIS (CONTADOR) ---
+
+async function getObrigacoesContador(contadorId) {
+    const { data, error } = await supabaseClient
+        .from('obrigacoes')
+        .select(`
+            *,
+            empresa:empresas(razao_social)
+        `)
+        .eq('contador_id', contadorId)
+        .order('data_vencimento', { ascending: true });
+
+    if (error) {
+        console.error('Erro ao buscar obrigações:', error);
+        return null;
+    }
+    return data;
+}
+
+async function getEmpresasDoContador(contadorId) {
+    const { data, error } = await supabaseClient
+        .from('empresas')
+        .select('*')
+        .eq('contador_id', contadorId);
+
+    if (error) {
+        console.error('Erro ao buscar empresas do contador:', error);
+        return null;
+    }
+    return data;
+}
+
+// --- 4. ADMIN (MÉTRICAS GLOBAIS) ---
+
+/**
+ * SELECT COMPLETO: Busca estatísticas para o Dashboard do Administrador
+ */
+async function getAdminMetrics() {
+    // Busca total de empresas
+    const { count: countEmpresas } = await supabaseClient
+        .from('empresas')
+        .select('*', { count: 'exact', head: true });
+
+    // Busca total de chamados em andamento/pendentes
+    const { count: countAndamento } = await supabaseClient
+        .from('solicitacoes')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['Pendente', 'Em Andamento', 'Aguardando Cliente']);
+
+    // Busca total de chamados concluídos globalmente
+    const { count: countConcluidos } = await supabaseClient
+        .from('solicitacoes')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'Concluído');
+
+    return {
+        totalClientes: countEmpresas || 0,
+        chamadosAbertos: countAndamento || 0,
+        tarefasConcluidas: countConcluidos || 0,
+        faturamento: "R$ 42.500" // Fixo para demonstração visual
+    };
+}
+
+
 // Exporta as funções para serem usadas globalmente (se em módulo) ou
 // simplesmente podem ser chamadas em outros arquivos JS carregados depois deste.
 window.db = {
     supabase: supabaseClient,
     getSolicitacoes,
+    getTodasSolicitacoes,
     criarSolicitacao,
     atualizarStatusSolicitacao,
     deletarSolicitacao,
     getAllEmpresas,
-    cadastrarEmpresa
+    cadastrarEmpresa,
+    getDocumentos,
+    getObrigacoesContador,
+    getEmpresasDoContador,
+    getAdminMetrics
 };

@@ -97,7 +97,7 @@
                             </div>
                             <div class="stat-info">
                                 <span>MRR (Receita Recorrente)</span>
-                                <strong>R$ 43.356,12</strong>
+                                <strong id="admin-faturamento">...</strong>
                             </div>
                         </div>
                         <div class="stat-card glass-card p-5">
@@ -106,16 +106,25 @@
                             </div>
                             <div class="stat-info">
                                 <span>Total de Clientes Ativos</span>
-                                <strong>124</strong>
+                                <strong id="admin-clientes">...</strong>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card p-5">
+                            <div class="stat-icon text-warning">
+                                <i class="ph ph-warning-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span>Chamados Abertos</span>
+                                <strong id="admin-chamados">...</strong>
                             </div>
                         </div>
                         <div class="stat-card glass-card p-5">
                             <div class="stat-icon text-admin">
-                                <i class="ph ph-chart-pie-slice"></i>
+                                <i class="ph ph-check-circle"></i>
                             </div>
                             <div class="stat-info">
-                                <span>Produtividade (Tarefas)</span>
-                                <strong>92% Fechadas</strong>
+                                <span>Tarefas Concluídas</span>
+                                <strong id="admin-tarefas">...</strong>
                             </div>
                         </div>
                     </div>
@@ -257,6 +266,47 @@
 
     <!-- Scripts -->
     <script src="../assets/js/menu.js"></script>
+
+    <!-- Supabase CDN & Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabaseClient.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initAdminDashboard();
+        });
+
+        async function initAdminDashboard() {
+            // Verifica a sessão
+            const { data: { session }, error: sessionError } = await window.db.supabase.auth.getSession();
+            if (!session || sessionError) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Verifica se tem permissão (role) usando o id logado
+            const { data: profileObj, error: profileError } = await window.db.supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profileError || !profileObj || profileObj.role !== 'admin') {
+                alert('Acesso negado: Apenas Administradores podem ver este painel.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Carrega Estatísticas Dinâmicas do Banco
+            const metrics = await window.db.getAdminMetrics();
+            if (metrics) {
+                document.getElementById('admin-clientes').innerText = metrics.totalClientes;
+                document.getElementById('admin-chamados').innerText = metrics.chamadosAbertos;
+                document.getElementById('admin-tarefas').innerText = metrics.tarefasConcluidas;
+                document.getElementById('admin-faturamento').innerText = metrics.faturamento;
+            }
+        }
+    </script>
 </body>
 
 </html>

@@ -110,25 +110,11 @@
                                     <th>Ações</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="solicitacoes-tbody">
+                                <!-- Linhas injetadas via Javascript (Supabase) -->
                                 <tr>
-                                    <td data-label="ID">#1024</td>
-                                    <td data-label="Descrição">Guia DAS (Simples Nacional)</td>
-                                    <td data-label="Vencimento">20/05/2026</td>
-                                    <td data-label="Status"><span class="status-badge status-warning">Aguardando
-                                            Pagamento</span></td>
-                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
-                                            aria-label="Baixar Guia"><i class="ph ph-download-simple"></i>
-                                            Baixar</button></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="ID">#1023</td>
-                                    <td data-label="Descrição">Folha de Pagamento - Abril</td>
-                                    <td data-label="Vencimento">05/05/2026</td>
-                                    <td data-label="Status"><span class="status-badge status-success">Concluído</span>
-                                    </td>
-                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
-                                            aria-label="Ver Folha"><i class="ph ph-eye"></i> Ver</button></td>
+                                    <td colspan="5" class="text-center text-secondary py-2"><i
+                                            class="ph ph-spinner ph-spin"></i> Carregando suas solicitações...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -189,16 +175,9 @@
                             Arquivo</button>
                     </div>
 
-                    <div class="grid-cards">
-                        <div class="doc-card glass-card">
-                            <i class="ph ph-file-pdf doc-icon text-danger"></i>
-                            <h4 class="font-500 text-lg">Contrato Social</h4>
-                            <p class="text-sm text-secondary">Atualizado em 2024</p>
-                        </div>
-                        <div class="doc-card glass-card">
-                            <i class="ph ph-file-xls doc-icon text-cliente"></i>
-                            <h4 class="font-500 text-lg">Balanço 2025</h4>
-                            <p class="text-sm text-secondary">Gerado em Março</p>
+                    <div class="grid-cards" id="documentos-grid">
+                        <div class="w-full text-center text-secondary py-2">
+                            <i class="ph ph-spinner ph-spin"></i> Buscando documentos...
                         </div>
                     </div>
                 </section>
@@ -214,29 +193,147 @@
     <script src="../assets/js/menu.js"></script>
 
     <script>
-        // Função Demonstrativa de Persistência no Form "Nova Solicitação"
+        // Variáveis Globais da Sessão
+        let currentUserId = null;
+        let userEmpresaId = null;
+
+        // Ao carregar a página, verifica a sessão e carrega os dados
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initDashboard();
+        });
+
+        async function initDashboard() {
+            // 1. Verifica quem está logado usando a Sessão Nativa
+            const { data: { session } } = await window.db.supabase.auth.getSession();
+
+            if (!session) {
+                // Se não tiver logado, expulsa para o index
+                window.location.href = '../index.html';
+                return;
+            }
+
+            currentUserId = session.user.id;
+
+            // 2. Descobre qual Empresa pertence a este cliente
+            const { data: empresaData } = await window.db.supabase
+                .from('empresas')
+                .select('id')
+                .eq('cliente_id', currentUserId)
+                .single();
+
+            if (empresaData) {
+                userEmpresaId = empresaData.id;
+                // Carrega as tabelas apenas se tiver empresa vinculada
+                await loadSolicitacoes();
+                await loadDocumentos();
+            } else {
+                // Se o cliente acabou de criar a conta e o Adm ainda não vinculou uma empresa
+                document.getElementById('solicitacoes-tbody').innerHTML = `
+                    <tr><td colspan="5" class="text-center text-secondary py-2">Sua conta ainda não foi vinculada a uma Empresa pelo Administrador.</td></tr>
+                `;
+                document.getElementById('documentos-grid').innerHTML = `
+                    <div class="w-full text-center text-secondary py-2">Nenhum documento disponível.</div>
+                `;
+            }
+        }
+
+        // Renderiza as solicitações reais na tabela
+        async function loadSolicitacoes() {
+            const tbody = document.getElementById('solicitacoes-tbody');
+            const data = await window.db.getSolicitacoes(userEmpresaId);
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-2">Nenhuma solicitação encontrada.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(solicitacao => {
+                // Formatação simples de badge de status
+                let badgeClass = 'status-info';
+                if (solicitacao.status === 'Concluído') badgeClass = 'status-success';
+                if (solicitacao.status === 'Em Andamento') badgeClass = 'status-warning';
+                if (solicitacao.status === 'Aguardando Cliente') badgeClass = 'status-danger';
+
+                // Formatar Data
+                const dataFormatada = new Date(solicitacao.created_at).toLocaleDateString('pt-BR');
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="ID">#${solicitacao.id.split('-')[0].substring(0, 5)}</td>
+                    <td data-label="Descrição">${solicitacao.tipo_servico}</td>
+                    <td data-label="Data">${dataFormatada}</td>
+                    <td data-label="Status"><span class="status-badge ${badgeClass}">${solicitacao.status}</span></td>
+                    <td data-label="Ações">
+                        <button class="btn-secondary py-half-px-1" aria-label="Ver Detalhes" onclick="alert('Detalhes: ${solicitacao.detalhes}')">
+                            <i class="ph ph-eye"></i> Ver
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Renderiza os documentos reais na aba de Documentos
+        async function loadDocumentos() {
+            const grid = document.getElementById('documentos-grid');
+            const data = await window.db.getDocumentos(userEmpresaId);
+
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="w-full text-center text-secondary py-2">Nenhum documento encontrado.</div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(doc => {
+                // Tenta inferir o ícone pelo tipo do arquivo
+                let iconClass = 'ph-file-text';
+                let iconColor = 'text-primary';
+
+                if (doc.tipo_documento.toLowerCase().includes('contrato')) {
+                    iconClass = 'ph-file-pdf'; iconColor = 'text-danger';
+                } else if (doc.tipo_documento.toLowerCase().includes('balanço') || doc.tipo_documento.toLowerCase().includes('planilha')) {
+                    iconClass = 'ph-file-xls'; iconColor = 'text-success';
+                }
+
+                const dataFormatada = new Date(doc.created_at).toLocaleDateString('pt-BR');
+
+                const div = document.createElement('div');
+                div.className = 'doc-card glass-card';
+                div.innerHTML = `
+                    <i class="ph ${iconClass} doc-icon ${iconColor}"></i>
+                    <h4 class="font-500 text-lg">${doc.nome_arquivo}</h4>
+                    <p class="text-sm text-secondary">${doc.tipo_documento} • ${dataFormatada}</p>
+                    <button class="btn-secondary mt-3 w-full" aria-label="Baixar Arquivo" onclick="alert('Download simulação: ${doc.storage_path}')">
+                        <i class="ph ph-download-simple"></i> Baixar
+                    </button>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // Trata o formulário "Nova Solicitação"
         async function handleNovaSolicitacao(event) {
             event.preventDefault();
 
-            // 1. Coleta os dados do formulário
+            if (!userEmpresaId) {
+                alert('Atenção: Você precisa ter uma empresa vinculada ao seu perfil para abrir chamados.');
+                return;
+            }
+
             const selTipo = document.getElementById('tipo_servico');
             const tipoText = selTipo.options[selTipo.selectedIndex].text;
             const urgencia = document.getElementById('urgencia').value;
             const detalhes = document.getElementById('detalhes').value;
-
-            // OBSERVAÇÃO: Em um app de produção, os IDs vêm do cliente logado (supabase.auth.getUser())
-            const fakeEmpresaId = '11111111-1111-1111-1111-111111111111';
-            const fakeUserId = '22222222-2222-2222-2222-222222222222';
 
             const btnSubmit = event.target.querySelector('button[type="submit"]');
             const originalText = btnSubmit.innerHTML;
             btnSubmit.innerHTML = '<i class="ph ph-spinner"></i> Salvando...';
             btnSubmit.disabled = true;
 
-            // 2. Chama a função de INSERT (Criar) do arquivo supabaseClient.js
             const result = await window.db.criarSolicitacao(
-                fakeEmpresaId,
-                fakeUserId,
+                userEmpresaId,
+                currentUserId, // Agora usa o ID real da sessão!
                 tipoText,
                 urgencia,
                 detalhes
@@ -246,11 +343,13 @@
             btnSubmit.disabled = false;
 
             if (result) {
-                alert('Solicitação salva com sucesso no Banco de Dados Supabase!');
                 event.target.reset();
+                // Volta pra primeira aba
                 document.querySelector('.menu-item[data-target="minhas-solicitacoes"]').click();
+                // Recarrega a tabela por debaixo dos panos pra aparecer o item novo
+                await loadSolicitacoes();
             } else {
-                alert('Erro na persistência. Você precisa colocar a URL e ANON_KEY reais no arquivo assets/js/supabaseClient.js e criar as tabelas.');
+                alert('Ocorreu um erro ao salvar a solicitação.');
             }
         }
     </script>

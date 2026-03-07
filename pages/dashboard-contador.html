@@ -85,7 +85,7 @@
                             </div>
                             <div class="stat-info">
                                 <span>Declarações Pendentes</span>
-                                <strong>12</strong>
+                                <strong id="count-obrigacoes">...</strong>
                             </div>
                         </div>
                         <div class="stat-card glass-card p-5">
@@ -94,7 +94,7 @@
                             </div>
                             <div class="stat-info">
                                 <span>Carteira de Clientes</span>
-                                <strong>45 empresas</strong>
+                                <strong id="count-carteira">...</strong>
                             </div>
                         </div>
                         <div class="stat-card glass-card p-5">
@@ -121,38 +121,10 @@
                                     <th>Ações</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="obrigacoes-tbody">
                                 <tr>
-                                    <td data-label="Empresa">Tech Nova LTDA</td>
-                                    <td data-label="Obrigação">Fechamento do DAS</td>
-                                    <td data-label="Prazo">15/05/2026</td>
-                                    <td data-label="Status"><span class="status-badge status-warning">Pendente</span>
-                                    </td>
-                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
-                                            aria-label="Processar Guia">
-                                            <i class="ph ph-paper-plane-right"></i>
-                                            Processar</button></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Empresa">Comércio Silva ME</td>
-                                    <td data-label="Obrigação">SPED Fiscal</td>
-                                    <td data-label="Prazo">12/05/2026</td>
-                                    <td data-label="Status"><span class="status-badge status-danger">Atraso (2
-                                            dias)</span></td>
-                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
-                                            aria-label="Notificar Empresa">
-                                            <i class="ph ph-warning-circle"></i>
-                                            Notificar</button></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Empresa">Consultoria RH S/A</td>
-                                    <td data-label="Obrigação">Folha - eSocial</td>
-                                    <td data-label="Prazo">07/05/2026</td>
-                                    <td data-label="Status"><span class="status-badge status-success">Transmitido</span>
-                                    </td>
-                                    <td data-label="Ações"><button class="btn-secondary py-half-px-1"
-                                            aria-label="Ver Recibo">
-                                            <i class="ph ph-eye"></i> Recibo</button></td>
+                                    <td colspan="5" class="text-center text-secondary py-2"><i
+                                            class="ph ph-spinner ph-spin"></i> Carregando obrigações...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -175,37 +147,9 @@
                         </div>
                     </div>
 
-                    <div class="grid-cards-xl">
-                        <div class="glass-card client-card">
-                            <div class="client-header">
-                                <h4 class="client-name text-contador">Tech
-                                    Nova LTDA</h4>
-                                <span class="status-badge status-info">Simples</span>
-                            </div>
-                            <p class="client-info">CNPJ: 12.345.678/0001-90</p>
-                            <p class="client-info">Categoria: Desenvolvimento</p>
-                            <div class="client-actions">
-                                <button class="btn-secondary flex-1 text-center p-half"
-                                    aria-label="Abrir Pasta">Pasta</button>
-                                <button class="btn-secondary flex-1 text-center p-half"
-                                    aria-label="Ver Ficha Contábil">Ficha Contábil</button>
-                            </div>
-                        </div>
-
-                        <div class="glass-card client-card">
-                            <div class="client-header">
-                                <h4 class="client-name text-contador">Comércio
-                                    Silva ME</h4>
-                                <span class="status-badge status-warning">Lucro Presumido</span>
-                            </div>
-                            <p class="client-info">CNPJ: 98.765.432/0001-10</p>
-                            <p class="client-info">Categoria: Varejo</p>
-                            <div class="client-actions">
-                                <button class="btn-secondary flex-1 text-center p-half"
-                                    aria-label="Abrir Pasta">Pasta</button>
-                                <button class="btn-secondary flex-1 text-center p-half"
-                                    aria-label="Ver Ficha Contábil">Ficha Contábil</button>
-                            </div>
+                    <div class="grid-cards-xl" id="clientes-grid">
+                        <div class="w-full text-center text-secondary py-2">
+                            <i class="ph ph-spinner ph-spin"></i> Buscando empresas da carteira...
                         </div>
                     </div>
                 </section>
@@ -219,7 +163,7 @@
                         </div>
                     </div>
 
-                    <form onsubmit="event.preventDefault(); alert('Relatório Gerado e enviado para a Lista!');">
+                    <form id="form-relatorio" onsubmit="event.preventDefault(); gerarRelatorioPDF();">
                         <div class="form-grid">
                             <div class="input-group flex-col items-start">
                                 <label class="form-label" for="cliente_select">Empresa Cliente</label>
@@ -262,6 +206,233 @@
 
     <!-- Scripts -->
     <script src="../assets/js/menu.js"></script>
+
+    <!-- Supabase CDN & Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabaseClient.js"></script>
+
+    <!-- jsPDF & AutoTable CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        let currentUserId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initContadorDashboard();
+        });
+
+        async function initContadorDashboard() {
+            // Verifica a sessão
+            const { data: { session }, error: sessionError } = await window.db.supabase.auth.getSession();
+            if (!session || sessionError) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            currentUserId = session.user.id;
+
+            // Verifica Permissões
+            const { data: profileObj, error: profileError } = await window.db.supabase
+                .from('profiles')
+                .select('role, nome')
+                .eq('id', currentUserId)
+                .single();
+
+            if (profileError || !profileObj || profileObj.role !== 'contador') {
+                alert('Acesso negado: Apenas Contadores podem ver este painel.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Atualiza Nome do Contador na Tela
+            document.querySelector('.dashboard-title h2').innerText = `Olá, ${profileObj.nome.split(' ')[0]}`;
+
+            // Preenche o Select de Empresas pro Relatório
+            const relatorioSelect = document.getElementById('cliente_select');
+            const carteira = await window.db.getEmpresasDoContador(currentUserId);
+
+            if (carteira && carteira.length > 0) {
+                relatorioSelect.innerHTML = '<option value="">Selecione na sua Carteira...</option>';
+                carteira.forEach(emp => {
+                    relatorioSelect.innerHTML += `<option value="${emp.id}">${emp.razao_social} (${emp.cnpj})</option>`;
+                });
+            }
+
+            await loadObrigacoes();
+            await loadCarteiraClientes();
+        }
+
+        async function loadObrigacoes() {
+            const tbody = document.getElementById('obrigacoes-tbody');
+            const data = await window.db.getObrigacoesContador(currentUserId);
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-2">Nenhuma obrigação pendente no momento.</td></tr>';
+                document.getElementById('count-obrigacoes').innerText = '0';
+                return;
+            }
+
+            // Atualiza o contador do card superior
+            const pendentes = data.filter(o => o.status !== 'Transmitido').length;
+            document.getElementById('count-obrigacoes').innerText = pendentes;
+
+            tbody.innerHTML = '';
+            data.forEach(obs => {
+                let badgeClass = 'status-warning';
+                let iconBtn = 'ph-paper-plane-right';
+                let actionText = 'Processar';
+
+                if (obs.status === 'Em Atraso') { badgeClass = 'status-danger'; iconBtn = 'ph-warning-circle'; actionText = 'Notificar'; }
+                if (obs.status === 'Transmitido') { badgeClass = 'status-success'; iconBtn = 'ph-check-circle'; actionText = 'Ver'; }
+
+                const dataFormatada = new Date(obs.data_vencimento).toLocaleDateString('pt-BR');
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Empresa">${obs.empresa ? obs.empresa.razao_social : 'Não vinculada'}</td>
+                    <td data-label="Obrigação">${obs.descricao}</td>
+                    <td data-label="Prazo">${dataFormatada}</td>
+                    <td data-label="Status"><span class="status-badge ${badgeClass}">${obs.status}</span></td>
+                    <td data-label="Ações">
+                        <button class="btn-secondary py-half-px-1" aria-label="${actionText}">
+                            <i class="ph ${iconBtn}"></i> ${actionText}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function loadCarteiraClientes() {
+            const grid = document.getElementById('clientes-grid');
+            const data = await window.db.getEmpresasDoContador(currentUserId);
+
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="w-full text-center text-secondary py-2">Nenhuma empresa atribuída a sua carteira ainda.</div>';
+                document.getElementById('count-carteira').innerText = '0 empresas';
+                return;
+            }
+
+            document.getElementById('count-carteira').innerText = `${data.length} empresas`;
+
+            grid.innerHTML = '';
+            data.forEach(empresa => {
+                let badgeTheme = 'status-info';
+                if (empresa.regime_tributario === 'Lucro Presumido') badgeTheme = 'status-warning';
+                if (empresa.regime_tributario === 'Lucro Real') badgeTheme = 'status-danger';
+
+                const card = document.createElement('div');
+                card.className = 'glass-card client-card';
+                card.innerHTML = `
+                    <div class="client-header">
+                        <h4 class="client-name text-contador">${empresa.razao_social}</h4>
+                        <span class="status-badge ${badgeTheme}">${empresa.regime_tributario}</span>
+                    </div>
+                    <p class="client-info">CNPJ: ${empresa.cnpj}</p>
+                    <p class="client-info">Status Supabase: Sincronizado</p>
+                    <div class="client-actions mt-3">
+                        <button class="btn-secondary flex-1 text-center py-2" aria-label="Abrir Pasta"><i class="ph ph-folder-open"></i> Pasta</button>
+                        <button class="btn-secondary flex-1 text-center py-2" aria-label="Ver Ficha"><i class="ph ph-file-text"></i> Ficha</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // INTEGRAÇÃO DE API: GERAÇÃO DE PDF (jsPDF)
+        // ==========================================
+        function gerarRelatorioPDF() {
+            // Verifica se a biblioteca carregou
+            if (!window.jspdf) {
+                alert("Erro ao carregar o gerador de PDF.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Pega os dados do formulário
+            const selectElement = document.getElementById('cliente_select');
+            const nomeEmpresa = selectElement.options[selectElement.selectedIndex].text;
+            const tipoRelatorio = document.getElementById('tipo_relatorio').value;
+            const anoRef = document.getElementById('ano_ref').value;
+            const mesBase = document.getElementById('mes_base').value;
+
+            if (selectElement.value === "") {
+                alert("Por favor, selecione uma Empresa Cliente primeiro.");
+                return;
+            }
+
+            // Cabeçalho do PDF
+            doc.setFontSize(18);
+            doc.setTextColor(40, 40, 40);
+            doc.text(`Relatório Contábil: ${tipoRelatorio}`, 14, 22);
+
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Empresa Referência: ${nomeEmpresa}`, 14, 30);
+            doc.text(`Período: Mês ${mesBase} de ${anoRef}`, 14, 36);
+            doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 14, 42);
+
+            // Dados Fictícios de Demonstração para a Tabela do PDF baseado no Tipo
+            let tableHead = [];
+            let tableBody = [];
+
+            if (tipoRelatorio === 'Balancete') {
+                tableHead = [['Conta', 'Descrição', 'Saldo Anterior', 'Débitos', 'Créditos', 'Saldo Atual']];
+                tableBody = [
+                    ['1.1.01.01', 'Caixa Geral', 'R$ 5.000,00', 'R$ 1.500,00', 'R$ 500,00', 'R$ 6.000,00'],
+                    ['1.1.02.01', 'Bancos Conta Movimento', 'R$ 45.000,00', 'R$ 15.000,00', 'R$ 10.000,00', 'R$ 50.000,00'],
+                    ['2.1.01.01', 'Fornecedores a Pagar', 'R$ 20.000,00', 'R$ 5.000,00', 'R$ 8.000,00', 'R$ 23.000,00'],
+                    ['3.1.01.01', 'Receita de Vendas', 'R$ 0,00', 'R$ 0,00', 'R$ 80.000,00', 'R$ 80.000,00'],
+                ];
+            } else if (tipoRelatorio === 'DRE') {
+                tableHead = [['Descrição (DRE)', 'Valor (R$)']];
+                tableBody = [
+                    ['Receita Bruta de Vendas', '250.000,00'],
+                    ['(-) Deduções e Impostos', '-45.000,00'],
+                    ['(=) Receita Líquida', '205.000,00'],
+                    ['(-) Custos dos Serviços', '-80.000,00'],
+                    ['(=) Lucro Bruto', '125.000,00'],
+                    ['(-) Despesas Operacionais', '-65.000,00'],
+                    ['(=) Lucro Líquido do Exercício', '60.000,00'],
+                ];
+            } else {
+                tableHead = [['Data', 'Descrição do Lançamento', 'Entrada', 'Saída', 'Saldo']];
+                tableBody = [
+                    ['01/01/2026', 'Saldo Inicial de Caixa', 'R$ 1.000,00', '-', 'R$ 1.000,00'],
+                    ['05/01/2026', 'Pagamento Internet', '-', 'R$ 150,00', 'R$ 850,00'],
+                    ['10/01/2026', 'Recebimento Cliente X', 'R$ 2.000,00', '-', 'R$ 2.850,00'],
+                ];
+            }
+
+            // Geração da Tabela usando o plugin AutoTable
+            doc.autoTable({
+                startY: 50,
+                head: tableHead,
+                body: tableBody,
+                theme: 'grid',
+                headStyles: { fillColor: [44, 62, 80] }, // Cor puxada pro background navy do dashboard
+                margin: { top: 10 }
+            });
+
+            // Rodapé Automático
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(150);
+                doc.text(`Página ${i} de ${pageCount} - Gerado pelo Sistema ContaPro`, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, {
+                    align: 'center'
+                });
+            }
+
+            // Abre o PDF em nova aba / Salva o PDF
+            doc.save(`${tipoRelatorio}_${nomeEmpresa.split(' ')[0]}_${mesBase}-${anoRef}.pdf`);
+        }
+    </script>
 </body>
 
 </html>
