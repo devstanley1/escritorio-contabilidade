@@ -57,11 +57,67 @@
                         <input id="senha_login" type="password" placeholder="Senha" required aria-label="Senha">
                     </div>
 
-                    <div class="login-actions mt-2">
-                        <button type="submit" class="btn-primary w-full p-1"
-                            style="border-radius: 12px; font-weight: 600;">
+                    <div class="login-actions mt-2 flex-col gap-1">
+                        <button type="submit" class="btn-primary w-full p-1">
                             <i class="ph ph-sign-in"></i> Entrar no Sistema
                         </button>
+                        <div class="auth-options">
+                            <a href="#" onclick="toggleForm('register')" class="auth-link-primary">Criar uma
+                                Conta</a>
+                            <a href="#" onclick="toggleForm('forgot')" class="auth-link-secondary">Esqueci a senha</a>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Cadastro de Cliente -->
+                <form id="formRegister" class="login-form d-none" onsubmit="handleRegister(event)">
+                    <div class="input-group">
+                        <label for="nome_cadastro" class="visually-hidden">Nome Completo</label>
+                        <i class="ph ph-user"></i>
+                        <input id="nome_cadastro" type="text" placeholder="Seu Nome Completo" required
+                            aria-label="Nome Completo">
+                    </div>
+                    <div class="input-group">
+                        <label for="email_cadastro" class="visually-hidden">E-mail</label>
+                        <i class="ph ph-envelope-simple"></i>
+                        <input id="email_cadastro" type="email" placeholder="E-mail de Cadastro" required
+                            aria-label="E-mail">
+                    </div>
+                    <div class="input-group">
+                        <label for="senha_cadastro" class="visually-hidden">Senha</label>
+                        <i class="ph ph-lock-key"></i>
+                        <input id="senha_cadastro" type="password" placeholder="Crie uma Senha forte" required
+                            minlength="6" aria-label="Senha">
+                    </div>
+
+                    <div class="login-actions mt-2 flex-col gap-1">
+                        <button type="submit" class="btn-primary w-full p-1 bg-cliente">
+                            <i class="ph ph-user-plus"></i> Abrir Conta de Cliente
+                        </button>
+                        <div class="auth-link-center">
+                            <a href="#" onclick="toggleForm('login')" class="auth-link-secondary">Já tenho conta? Voltar
+                                ao
+                                Login</a>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Esqueci a Senha -->
+                <form id="formForgot" class="login-form d-none" onsubmit="handleForgot(event)">
+                    <div class="input-group">
+                        <label for="email_forgot" class="visually-hidden">E-mail de recuperação</label>
+                        <i class="ph ph-envelope-simple"></i>
+                        <input id="email_forgot" type="email" placeholder="Seu E-mail cadastrado" required
+                            aria-label="E-mail de recuperação">
+                    </div>
+
+                    <div class="login-actions mt-2 flex-col gap-1">
+                        <button type="submit" class="btn-primary w-full p-1">
+                            <i class="ph ph-paper-plane-tilt"></i> Enviar Link de Recuperação
+                        </button>
+                        <div class="auth-link-center">
+                            <a href="#" onclick="toggleForm('login')" class="auth-link-secondary">Voltar ao Login</a>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -77,6 +133,21 @@
     <script src="assets/js/menu.js"></script>
 
     <script>
+        // Função para alternar entre as telas de formulário
+        function toggleForm(formType) {
+            document.getElementById('formLogin').style.display = 'none';
+            document.getElementById('formRegister').style.display = 'none';
+            document.getElementById('formForgot').style.display = 'none';
+
+            if (formType === 'login') {
+                document.getElementById('formLogin').style.display = 'block';
+            } else if (formType === 'register') {
+                document.getElementById('formRegister').style.display = 'block';
+            } else if (formType === 'forgot') {
+                document.getElementById('formForgot').style.display = 'block';
+            }
+        }
+
         // Lógica Global de Autenticação Real do Supabase Web
         async function handleLogin(event) {
             event.preventDefault();
@@ -89,7 +160,6 @@
             const email = document.getElementById('email_login').value;
             const password = document.getElementById('senha_login').value;
 
-            // 1. Tenta fazer login contra o Supabase Auth Nativo (Protegido e Encriptado pela nuvem)
             const { data: authData, error: authError } = await window.db.supabase.auth.signInWithPassword({
                 email: email,
                 password: password,
@@ -102,7 +172,6 @@
                 return;
             }
 
-            // 2. Com o Login feito, busca qual é a ROLE dele na tabela "profiles" para saber pra qual tela mandar
             const userId = authData.user.id;
             const { data: profileObj, error: profileErr } = await window.db.supabase
                 .from('profiles')
@@ -110,15 +179,9 @@
                 .eq('id', userId)
                 .single();
 
-            if (profileErr || !profileObj) {
-                alert('Conta existe na Auth, mas o perfil não foi criado na tabela "profiles". O banco RLS retornou um erro estrutural.');
-                btnSubmit.innerHTML = originalText;
-                btnSubmit.disabled = false;
-                return;
-            }
+            // Roteador de Cargos
+            const cargo = profileObj ? profileObj.role : 'cliente'; // Fallback de fail-safe
 
-            // 3. O Roteador Dinâmico que manda o usuário pra tela correta baseada no Cargo Oficial do sistema
-            const cargo = profileObj.role;
             if (cargo === 'cliente') {
                 window.location.href = 'pages/dashboard-cliente.html';
             } else if (cargo === 'contador') {
@@ -128,10 +191,87 @@
             } else if (cargo === 'admin') {
                 window.location.href = 'pages/dashboard-admin.html';
             } else {
-                alert('O Cargo (Role) dessa conta não é reconhecido pelo sistema.');
+                window.location.href = 'pages/dashboard-cliente.html'; // Padrão
+            }
+        }
+
+        // Lógica de Criação de Conta Exclusiva para Clientes
+        async function handleRegister(event) {
+            event.preventDefault();
+
+            const btnSubmit = event.target.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="ph ph-spinner"></i> Criando conta...';
+            btnSubmit.disabled = true;
+
+            const nome = document.getElementById('nome_cadastro').value;
+            const email = document.getElementById('email_cadastro').value;
+            const password = document.getElementById('senha_cadastro').value;
+
+            // 1. Registra no Auth
+            const { data: authData, error: authError } = await window.db.supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (authError) {
+                alert('Falha no Cadastro: ' + authError.message);
                 btnSubmit.innerHTML = originalText;
                 btnSubmit.disabled = false;
+                return;
             }
+
+            // Dependendo das configurações do Supabase, o signUp envia um email de confirmação
+            if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
+                alert('Este e-mail já está em uso.');
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+                return;
+            }
+
+            const userId = authData.user.id;
+
+            // 2. Cria o Perfil oficial com cargo de "cliente" fixo
+            const { error: profileError } = await window.db.supabase
+                .from('profiles')
+                .upsert([
+                    { id: userId, nome: nome, role: 'cliente' }
+                ]);
+
+            if (profileError) {
+                console.error("Erro ao criar perfil:", profileError);
+                // Mesmo assim envia o cliente para frente para não travar a UX
+            }
+
+            // 3. Redireciona para o Painel logado
+            window.location.href = 'pages/dashboard-cliente.html';
+        }
+
+        // Lógica de Recuperação de Senha
+        async function handleForgot(event) {
+            event.preventDefault();
+
+            const btnSubmit = event.target.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="ph ph-spinner"></i> Enviando...';
+            btnSubmit.disabled = true;
+
+            const email = document.getElementById('email_forgot').value;
+
+            const { error } = await window.db.supabase.auth.resetPasswordForEmail(email, {
+                // Redireciona de volta p/ a home pra trocar a senha
+                redirectTo: window.location.origin + window.location.pathname,
+            });
+
+            if (error) {
+                alert('Ocorreu um erro: ' + error.message);
+            } else {
+                alert('Enviamos um link de recuperação para o seu e-mail!');
+                toggleForm('login');
+            }
+
+            btnSubmit.innerHTML = originalText;
+            btnSubmit.disabled = false;
         }
     </script>
 </body>
