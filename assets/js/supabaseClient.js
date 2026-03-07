@@ -8,7 +8,7 @@ const SUPABASE_URL = 'https://hcxdrsxiajijzzeizbsh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjeGRyc3hpYWppanp6ZWl6YnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4ODUxOTcsImV4cCI6MjA4ODQ2MTE5N30.tATTr1ERwbEXqIHQmxWubm0j9V2HoXv6Zi5TSzqRs7U';
 
 // Inicializa o cliente do Supabase (A biblioteca deve ser importada no HTML via CDN)
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==========================================
 // FUNÇÕES DE CRUD (Create, Read, Update, Delete)
@@ -20,7 +20,7 @@ const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
  * SELECT: Busca todas as solicitações de uma empresa específica (Para o Dashboard do Cliente)
  */
 async function getSolicitacoes(empresaId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('solicitacoes')
         .select('*')
         .eq('empresa_id', empresaId)
@@ -37,7 +37,7 @@ async function getSolicitacoes(empresaId) {
  * INSERT: Cria uma nova solicitação no banco
  */
 async function criarSolicitacao(empresaId, solicitanteId, tipoServico, urgencia, detalhes) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('solicitacoes')
         .insert([
             {
@@ -63,7 +63,7 @@ async function criarSolicitacao(empresaId, solicitanteId, tipoServico, urgencia,
  * UPDATE: Atualiza o status de uma solicitação (Para o Dashboard do Atendimento/Contador)
  */
 async function atualizarStatusSolicitacao(solicitacaoId, novoStatus) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('solicitacoes')
         .update({ status: novoStatus, updated_at: new Date() })
         .eq('id', solicitacaoId)
@@ -81,7 +81,7 @@ async function atualizarStatusSolicitacao(solicitacaoId, novoStatus) {
  * DELETE: Exclui uma solicitação por engano
  */
 async function deletarSolicitacao(solicitacaoId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('solicitacoes')
         .delete()
         .eq('id', solicitacaoId);
@@ -101,7 +101,7 @@ async function deletarSolicitacao(solicitacaoId) {
  * Traz as empresas e também os dados do cliente dono e do contador responsável.
  */
 async function getAllEmpresas() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('empresas')
         .select(`
             *,
@@ -120,7 +120,7 @@ async function getAllEmpresas() {
  * INSERT: Cadastra uma nova empresa
  */
 async function cadastrarEmpresa(razaoSocial, cnpj, regime) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('empresas')
         .insert([
             {
@@ -141,7 +141,7 @@ async function cadastrarEmpresa(razaoSocial, cnpj, regime) {
 // Exporta as funções para serem usadas globalmente (se em módulo) ou
 // simplesmente podem ser chamadas em outros arquivos JS carregados depois deste.
 window.db = {
-    supabase,
+    supabase: supabaseClient,
     getSolicitacoes,
     criarSolicitacao,
     atualizarStatusSolicitacao,
