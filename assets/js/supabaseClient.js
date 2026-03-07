@@ -261,6 +261,21 @@ async function atualizarConfiguracoesAdmin(nomeEscritorio, diasUteis) {
     return true;
 }
 
+/**
+ * SELECT: Busca todos os membros da equipe no Supabase
+ */
+async function getAdminTeam() {
+    const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .order('role', { ascending: true });
+
+    if (error) {
+        console.error('Erro ao buscar equipe:', error);
+        return [];
+    }
+    return data;
+}
 
 // Exporta as funções para serem usadas globalmente (se em módulo) ou
 // simplesmente podem ser chamadas em outros arquivos JS carregados depois deste.
@@ -277,5 +292,6 @@ window.db = {
     getObrigacoesContador,
     getEmpresasDoContador,
     getAdminMetrics,
+    getAdminTeam,
     atualizarConfiguracoesAdmin
 };

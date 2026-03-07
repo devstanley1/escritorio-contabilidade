@@ -141,28 +141,8 @@
                                     <th>Status Geral</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td data-label="Colaborador">Carlos Mendes</td>
-                                    <td data-label="Carteira">45 Empresas</td>
-                                    <td data-label="Prazo">100% (Sem Atrasos)</td>
-                                    <td data-label="Status Geral"><span
-                                            class="status-badge status-success">Excelente</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Colaborador">Ana Beatriz</td>
-                                    <td data-label="Carteira">50 Empresas</td>
-                                    <td data-label="Prazo">96% (1 Atraso)</td>
-                                    <td data-label="Status Geral"><span class="status-badge status-success">Bom</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Colaborador">Roberto Alves</td>
-                                    <td data-label="Carteira">29 Empresas</td>
-                                    <td data-label="Prazo">80% (4 Atrasos)</td>
-                                    <td data-label="Status Geral"><span
-                                            class="status-badge status-warning">Atenção</span></td>
-                                </tr>
+                            <tbody id="admin-performance-tbody">
+                                <!-- Preenchido dinamicamente via Supabase -->
                             </tbody>
                         </table>
                     </div>
@@ -189,21 +169,8 @@
                         </div>
                         <button class="btn-primary bg-admin"><i class="ph ph-user-plus"></i> Novo Membro</button>
                     </div>
-                    <div class="grid-cards-lg">
-                        <div class="glass-card team-card">
-                            <div class="team-icon-wrapper">
-                                <i class="ph ph-user text-2xl text-contador"></i>
-                            </div>
-                            <h4 class="font-600">Carlos Mendes</h4>
-                            <p class="text-sm text-secondary">Contador Sênior</p>
-                        </div>
-                        <div class="glass-card team-card">
-                            <div class="team-icon-wrapper">
-                                <i class="ph ph-user text-2xl text-atendimento"></i>
-                            </div>
-                            <h4 class="font-600">Juliana Silva</h4>
-                            <p class="text-sm text-secondary">Recepção / Triagem</p>
-                        </div>
+                    <div class="grid-cards-lg" id="admin-team-grid">
+                        <!-- Preenchido dinamicamente via Supabase -->
                     </div>
                 </section>
 
@@ -284,11 +251,13 @@
                 return;
             }
 
-            // Verifica se tem permissão (role) usando o id logado
+            currentUserId = session.user.id;
+
+            // Verifica Permissões
             const { data: profileObj, error: profileError } = await window.db.supabase
                 .from('profiles')
-                .select('role')
-                .eq('id', session.user.id)
+                .select('role, nome')
+                .eq('id', currentUserId)
                 .single();
 
             if (profileError || !profileObj || profileObj.role !== 'admin') {
@@ -297,7 +266,14 @@
                 return;
             }
 
-            // Carrega Estatísticas Dinâmicas do Banco
+            // Atualiza Nome na Tela
+            document.querySelector('.dashboard-title h2').innerText = `Visão Geral, ${profileObj.nome.split(' ')[0]}`;
+
+            await renderGlobalMetrics();
+            await renderAdminTeam();
+        }
+
+        async function renderGlobalMetrics() {
             const metrics = await window.db.getAdminMetrics();
             if (metrics) {
                 document.getElementById('admin-clientes').innerText = metrics.totalClientes;
@@ -305,6 +281,46 @@
                 document.getElementById('admin-tarefas').innerText = metrics.tarefasConcluidas;
                 document.getElementById('admin-faturamento').innerText = metrics.faturamento;
             }
+        }
+
+        async function renderAdminTeam() {
+            const teamDados = await window.db.getAdminTeam();
+            if (!teamDados) return;
+
+            const tbody = document.getElementById('admin-performance-tbody');
+            const grid = document.getElementById('admin-team-grid');
+
+            tbody.innerHTML = '';
+            if (grid) grid.innerHTML = '';
+
+            teamDados.forEach(membro => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Colaborador">${membro.nome || 'Usuário'}</td>
+                    <td data-label="Carteira">${membro.role === 'contador' ? '25 Empresas' : 'N/A'}</td>
+                    <td data-label="Prazo">100% (No Prazo)</td>
+                    <td data-label="Status Geral"><span class="status-badge status-success">Ativo</span></td>
+                `;
+                tbody.appendChild(tr);
+
+                if (grid) {
+                    let iconColor = membro.role === 'contador' ? 'text-contador' :
+                        membro.role === 'admin' ? 'text-admin' : 'text-atendimento';
+                    let labelRole = membro.role === 'contador' ? 'Contador' :
+                        membro.role === 'admin' ? 'Administrador' : 'Atendimento';
+
+                    const card = document.createElement('div');
+                    card.className = 'glass-card team-card';
+                    card.innerHTML = `
+                        <div class="team-icon-wrapper">
+                            <i class="ph ph-user text-2xl ${iconColor}"></i>
+                        </div>
+                        <h4 class="font-600">${membro.nome || 'Usuário'}</h4>
+                        <p class="text-sm text-secondary">${labelRole}</p>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
         }
 
         // ==========================================
