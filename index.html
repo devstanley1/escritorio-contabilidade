@@ -44,7 +44,7 @@
                     <div class="service-tag"><i class="ph ph-chart-line-up"></i> Planejamento Tributário</div>
                 </div>
 
-                <form class="login-form" onsubmit="event.preventDefault();">
+                <form id="formLogin" class="login-form" onsubmit="handleLogin(event)">
                     <div class="input-group">
                         <label for="email_login" class="visually-hidden">E-mail de acesso</label>
                         <i class="ph ph-envelope-simple"></i>
@@ -57,34 +57,83 @@
                         <input id="senha_login" type="password" placeholder="Senha" required aria-label="Senha">
                     </div>
 
-                    <div class="login-actions">
-                        <p class="section-title">Acessar Painel Simulativo:</p>
-                        <div class="roles-grid">
-                            <button type="button" class="btn-role btn-cliente"
-                                onclick="window.location.href='pages/dashboard-cliente.html'">
-                                <i class="ph ph-user"></i> Cliente
-                            </button>
-                            <button type="button" class="btn-role btn-contador"
-                                onclick="window.location.href='pages/dashboard-contador.html'">
-                                <i class="ph ph-calculator"></i> Contador
-                            </button>
-                            <button type="button" class="btn-role btn-atendimento"
-                                onclick="window.location.href='pages/dashboard-atendimento.html'">
-                                <i class="ph ph-headset"></i> Atendimento
-                            </button>
-                            <button type="button" class="btn-role btn-admin"
-                                onclick="window.location.href='pages/dashboard-admin.html'">
-                                <i class="ph ph-chart-pie-slice"></i> Admin
-                            </button>
-                        </div>
+                    <div class="login-actions mt-2">
+                        <button type="submit" class="btn-primary w-full p-1"
+                            style="border-radius: 12px; font-weight: 600;">
+                            <i class="ph ph-sign-in"></i> Entrar no Sistema
+                        </button>
                     </div>
                 </form>
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Supabase CDN & Relacionados -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabaseClient.js"></script>
+    <script src="assets/js/authSetup.js"></script> <!-- Script para gerar contas iniciais no console -->
+
+    <!-- Scripts Base -->
     <script src="assets/js/menu.js"></script>
+
+    <script>
+        // Lógica Global de Autenticação Real do Supabase Web
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const btnSubmit = event.target.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="ph ph-spinner"></i> Autenticando...';
+            btnSubmit.disabled = true;
+
+            const email = document.getElementById('email_login').value;
+            const password = document.getElementById('senha_login').value;
+
+            // 1. Tenta fazer login contra o Supabase Auth Nativo (Protegido e Encriptado pela nuvem)
+            const { data: authData, error: authError } = await window.db.supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (authError) {
+                alert('Falha no Login: ' + authError.message);
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+                return;
+            }
+
+            // 2. Com o Login feito, busca qual é a ROLE dele na tabela "profiles" para saber pra qual tela mandar
+            const userId = authData.user.id;
+            const { data: profileObj, error: profileErr } = await window.db.supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', userId)
+                .single();
+
+            if (profileErr || !profileObj) {
+                alert('Conta existe na Auth, mas o perfil não foi criado na tabela "profiles". O banco RLS retornou um erro estrutural.');
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+                return;
+            }
+
+            // 3. O Roteador Dinâmico que manda o usuário pra tela correta baseada no Cargo Oficial do sistema
+            const cargo = profileObj.role;
+            if (cargo === 'cliente') {
+                window.location.href = 'pages/dashboard-cliente.html';
+            } else if (cargo === 'contador') {
+                window.location.href = 'pages/dashboard-contador.html';
+            } else if (cargo === 'atendimento') {
+                window.location.href = 'pages/dashboard-atendimento.html';
+            } else if (cargo === 'admin') {
+                window.location.href = 'pages/dashboard-admin.html';
+            } else {
+                alert('O Cargo (Role) dessa conta não é reconhecido pelo sistema.');
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+            }
+        }
+    </script>
 </body>
 
 </html>

@@ -144,7 +144,7 @@
                         </div>
                     </div>
 
-                    <form onsubmit="event.preventDefault(); alert('Solicitação enviada com sucesso!');">
+                    <form id="formNovaSolicitacao" onsubmit="handleNovaSolicitacao(event)">
                         <div class="form-grid">
                             <div class="input-group flex-col items-start">
                                 <label class="form-label" for="tipo_servico">Tipo de Serviço</label>
@@ -207,8 +207,53 @@
         </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Supabase CDN & Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabaseClient.js"></script>
+    <!-- Scripts Base -->
     <script src="../assets/js/menu.js"></script>
+
+    <script>
+        // Função Demonstrativa de Persistência no Form "Nova Solicitação"
+        async function handleNovaSolicitacao(event) {
+            event.preventDefault();
+
+            // 1. Coleta os dados do formulário
+            const selTipo = document.getElementById('tipo_servico');
+            const tipoText = selTipo.options[selTipo.selectedIndex].text;
+            const urgencia = document.getElementById('urgencia').value;
+            const detalhes = document.getElementById('detalhes').value;
+
+            // OBSERVAÇÃO: Em um app de produção, os IDs vêm do cliente logado (supabase.auth.getUser())
+            const fakeEmpresaId = '11111111-1111-1111-1111-111111111111';
+            const fakeUserId = '22222222-2222-2222-2222-222222222222';
+
+            const btnSubmit = event.target.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="ph ph-spinner"></i> Salvando...';
+            btnSubmit.disabled = true;
+
+            // 2. Chama a função de INSERT (Criar) do arquivo supabaseClient.js
+            const result = await window.db.criarSolicitacao(
+                fakeEmpresaId,
+                fakeUserId,
+                tipoText,
+                urgencia,
+                detalhes
+            );
+
+            btnSubmit.innerHTML = originalText;
+            btnSubmit.disabled = false;
+
+            if (result) {
+                alert('Solicitação salva com sucesso no Banco de Dados Supabase!');
+                event.target.reset();
+                document.querySelector('.menu-item[data-target="minhas-solicitacoes"]').click();
+            } else {
+                alert('Erro na persistência. Você precisa colocar a URL e ANON_KEY reais no arquivo assets/js/supabaseClient.js e criar as tabelas.');
+            }
+        }
+    </script>
 </body>
 
 </html>
