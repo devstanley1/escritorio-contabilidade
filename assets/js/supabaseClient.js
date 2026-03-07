@@ -239,6 +239,28 @@ async function getAdminMetrics() {
     };
 }
 
+/**
+ * UPDATE: Permite o Admin atualizar configurações globais
+ */
+async function atualizarConfiguracoesAdmin(nomeEscritorio, diasUteis) {
+    // Usando id = 1 dado que só temos 1 linha de setup em schema.sql
+    const { data, error } = await supabaseClient
+        .from('configuracoes')
+        .update({
+            nome_escritorio: nomeEscritorio,
+            dias_uteis_sla: diasUteis,
+            updated_at: new Date()
+        })
+        .eq('id', 1)
+        .select();
+
+    if (error) {
+        console.error('Erro ao salvar settings:', error);
+        return false;
+    }
+    return true;
+}
+
 
 // Exporta as funções para serem usadas globalmente (se em módulo) ou
 // simplesmente podem ser chamadas em outros arquivos JS carregados depois deste.
@@ -254,5 +276,6 @@ window.db = {
     getDocumentos,
     getObrigacoesContador,
     getEmpresasDoContador,
-    getAdminMetrics
+    getAdminMetrics,
+    atualizarConfiguracoesAdmin
 };

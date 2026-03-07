@@ -240,7 +240,7 @@
                             <p>Parâmetros globais, SLAs e Integrações (Receita Federal/Prefeitura)</p>
                         </div>
                     </div>
-                    <form onsubmit="event.preventDefault(); alert('Configurações Salvas!');">
+                    <form id="form-configuracoes">
                         <div class="form-grid">
                             <div class="input-group flex-col items-start">
                                 <label class="form-label" for="nome_escritorio">Nome do Escritório</label>
@@ -306,6 +306,32 @@
                 document.getElementById('admin-faturamento').innerText = metrics.faturamento;
             }
         }
+
+        // ==========================================
+        // SUBMIT: ATUALIZAR CONFIGURAÇÕES GLOBAIS
+        // ==========================================
+        document.getElementById('form-configuracoes')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Atualizando...';
+            btn.disabled = true;
+
+            const nome = document.getElementById('nome_escritorio').value;
+            const diasSla = document.getElementById('dias_uteis').value;
+
+            const sucesso = await window.db.atualizarConfiguracoesAdmin(nome, diasSla);
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+
+            if (sucesso) {
+                alert('Configurações Globais atualizadas com sucesso no banco!');
+            } else {
+                alert('Falha ao atualizar parâmetros.');
+            }
+        });
     </script>
 </body>
 

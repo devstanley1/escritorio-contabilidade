@@ -107,13 +107,8 @@
                         </div>
                     </div>
 
-                    <form onsubmit="event.preventDefault(); alert('Empresa Cadastrada!');">
+                    <form id="form-novo-cliente">
                         <div class="form-grid">
-                            <div class="input-group flex-col items-start">
-                                <label class="form-label" for="razao_social">Razão Social</label>
-                                <input id="razao_social" type="text" placeholder="Nome da Empresa" required
-                                    class="w-full pl-4" aria-label="Razão Social">
-                            </div>
                             <div class="input-group flex-col items-start w-full relative">
                                 <label class="form-label" for="cnpj_empresa">CNPJ</label>
                                 <input id="cnpj_empresa" type="text" placeholder="00.000.000/0001-00" required
@@ -122,11 +117,16 @@
                                     class="ph ph-spinner ph-spin text-primary absolute right-3 top-10 hidden"></i>
                             </div>
                             <div class="input-group flex-col items-start">
+                                <label class="form-label" for="razao_social">Razão Social</label>
+                                <input id="razao_social" type="text" placeholder="Nome da Empresa" required
+                                    class="w-full pl-4" aria-label="Razão Social">
+                            </div>
+                            <div class="input-group flex-col items-start">
                                 <label class="form-label" for="plano_regime">Plano / Regime</label>
                                 <select id="plano_regime" required class="w-full pl-4" aria-label="Plano ou Regime">
-                                    <option value="1">MEI (R$ 150/mês)</option>
-                                    <option value="2">Simples Nacional (R$ 450/mês)</option>
-                                    <option value="3">Lucro Presumido (R$ 1.200/mês)</option>
+                                    <option value="Simples Nacional">Simples Nacional (R$ 450/mês)</option>
+                                    <option value="Lucro Presumido">Lucro Presumido (R$ 1.200/mês)</option>
+                                    <option value="Lucro Real">Lucro Real (R$ 3.000/mês)</option>
                                 </select>
                             </div>
                             <div class="input-group flex-col items-start">
@@ -281,6 +281,35 @@
                 }
             }
         }
+
+        // ==========================================
+        // SUBMIT: CADASTRAR NOVA EMPRESA (SUPABASE)
+        // ==========================================
+        document.getElementById('form-novo-cliente')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Salvando...';
+            btn.disabled = true;
+
+            const cnpj = document.getElementById('cnpj_empresa').value;
+            const razao = document.getElementById('razao_social').value;
+            const regime = document.getElementById('plano_regime').value;
+            // O e-mail do sócio será ignorado nesse momento pro schema DB básico
+
+            const resultado = await window.db.cadastrarEmpresa(razao, cnpj, regime);
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+
+            if (resultado) {
+                alert('Empresa salva com sucesso no banco de dados!');
+                e.target.reset(); // Limpa o formulário
+            } else {
+                alert('Erro ao salvar. Verifique se o CNPJ já não está cadastrado e tente novamente.');
+            }
+        });
 
         // ==========================================
         // INTEGRAÇÃO DE API: BUSCA DE CNPJ (BrasilAPI)
