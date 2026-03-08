@@ -138,14 +138,14 @@ async function getAllEmpresas() {
 /**
  * INSERT: Cadastra uma nova empresa
  */
-async function cadastrarEmpresa(razaoSocial, cnpj, regime) {
+async function cadastrarEmpresa(documento, razaoSocial, regimeTributario) {
     const { data, error } = await supabaseClient
         .from('empresas')
         .insert([
             {
                 razao_social: razaoSocial,
-                cnpj: cnpj,
-                regime_tributario: regime
+                documento: documento,
+                regime_tributario: regimeTributario
             }
         ])
         .select();

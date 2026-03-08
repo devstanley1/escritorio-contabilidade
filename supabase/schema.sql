@@ -23,7 +23,7 @@ CREATE TABLE public.profiles (
 CREATE TABLE public.empresas (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     razao_social VARCHAR(255) NOT NULL,
-    cnpj VARCHAR(20) UNIQUE NOT NULL,
+    documento VARCHAR(20) UNIQUE NOT NULL,
     regime_tributario VARCHAR(50) CHECK (
         regime_tributario IN (
             'Simples Nacional',
