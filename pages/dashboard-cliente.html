@@ -85,7 +85,7 @@
                             </div>
                             <div class="stat-info">
                                 <span>Pendentes</span>
-                                <strong>2</strong>
+                                <strong id="count-pendentes">0</strong>
                             </div>
                         </div>
                         <div class="stat-card glass-card p-5">
@@ -94,7 +94,7 @@
                             </div>
                             <div class="stat-info">
                                 <span>Concluídas (Mês)</span>
-                                <strong>5</strong>
+                                <strong id="count-concluidas">0</strong>
                             </div>
                         </div>
                     </div>
@@ -244,8 +244,16 @@
 
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-2">Nenhuma solicitação encontrada.</td></tr>';
+                if (document.getElementById('count-pendentes')) document.getElementById('count-pendentes').innerText = '0';
+                if (document.getElementById('count-concluidas')) document.getElementById('count-concluidas').innerText = '0';
                 return;
             }
+
+            // Atualiza métricas
+            const pendentes = data.filter(s => s.status !== 'Concluído').length;
+            const concluidas = data.filter(s => s.status === 'Concluído').length;
+            if (document.getElementById('count-pendentes')) document.getElementById('count-pendentes').innerText = pendentes;
+            if (document.getElementById('count-concluidas')) document.getElementById('count-concluidas').innerText = concluidas;
 
             tbody.innerHTML = '';
             data.forEach(solicitacao => {

@@ -103,7 +103,7 @@
                             </div>
                             <div class="stat-info">
                                 <span>Impostos Fechados</span>
-                                <strong>33 / 45</strong>
+                                <strong id="count-concluidas">...</strong>
                             </div>
                         </div>
                     </div>
@@ -270,12 +270,15 @@
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary py-2">Nenhuma obrigação pendente no momento.</td></tr>';
                 document.getElementById('count-obrigacoes').innerText = '0';
+                if (document.getElementById('count-concluidas')) document.getElementById('count-concluidas').innerText = '0 / 0';
                 return;
             }
 
             // Atualiza o contador do card superior
             const pendentes = data.filter(o => o.status !== 'Transmitido').length;
+            const transmitidos = data.length - pendentes;
             document.getElementById('count-obrigacoes').innerText = pendentes;
+            if (document.getElementById('count-concluidas')) document.getElementById('count-concluidas').innerText = `${transmitidos} / ${data.length}`;
 
             tbody.innerHTML = '';
             data.forEach(obs => {

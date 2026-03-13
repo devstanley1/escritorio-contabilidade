@@ -293,13 +293,31 @@
             tbody.innerHTML = '';
             if (grid) grid.innerHTML = '';
 
-            teamDados.forEach(membro => {
+            // Usando for...of para permitir await dentro do loop
+            for (const membro of teamDados) {
+                let carteiraString = 'N/A';
+                let prazoString = 'N/A';
+                let statusBadge = 'status-success';
+                let statusGeral = 'Ativo';
+
+                if (membro.role === 'contador') {
+                    const stats = await window.db.getContadorStats(membro.id);
+                    carteiraString = `${stats.carteira} Empresas`;
+                    prazoString = `${stats.prazo}% (No Prazo)`;
+                    statusGeral = stats.labelGeral;
+                    if (stats.labelGeral === 'Excelente' || stats.labelGeral === 'Bom') {
+                        statusBadge = 'status-success';
+                    } else {
+                        statusBadge = 'status-warning';
+                    }
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td data-label="Colaborador">${membro.nome || 'Usuário'}</td>
-                    <td data-label="Carteira">${membro.role === 'contador' ? '25 Empresas' : 'N/A'}</td>
-                    <td data-label="Prazo">100% (No Prazo)</td>
-                    <td data-label="Status Geral"><span class="status-badge status-success">Ativo</span></td>
+                    <td data-label="Carteira">${carteiraString}</td>
+                    <td data-label="Prazo">${prazoString}</td>
+                    <td data-label="Status Geral"><span class="status-badge ${statusBadge}">${statusGeral}</span></td>
                 `;
                 tbody.appendChild(tr);
 
@@ -320,7 +338,7 @@
                     `;
                     grid.appendChild(card);
                 }
-            });
+            }
         }
 
         // ==========================================

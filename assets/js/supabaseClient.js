@@ -214,10 +214,22 @@ async function getEmpresasDoContador(contadorId) {
  * SELECT COMPLETO: Busca estatísticas para o Dashboard do Administrador
  */
 async function getAdminMetrics() {
-    // Busca total de empresas
-    const { count: countEmpresas } = await supabaseClient
+    // Busca todas as empresas para calcular faturamento
+    const { data: empresasData, error: empresasError } = await supabaseClient
         .from('empresas')
-        .select('*', { count: 'exact', head: true });
+        .select('regime_tributario');
+
+    let totalFaturamento = 0;
+    let countEmpresas = 0;
+
+    if (!empresasError && empresasData) {
+        countEmpresas = empresasData.length;
+        empresasData.forEach(emp => {
+            if (emp.regime_tributario === 'Simples Nacional') totalFaturamento += 450;
+            else if (emp.regime_tributario === 'Lucro Presumido') totalFaturamento += 1200;
+            else if (emp.regime_tributario === 'Lucro Real') totalFaturamento += 3000;
+        });
+    }
 
     // Busca total de chamados em andamento/pendentes
     const { count: countAndamento } = await supabaseClient
@@ -231,11 +243,14 @@ async function getAdminMetrics() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'Concluído');
 
+    // Formatar como BRL
+    const faturamentoFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalFaturamento);
+
     return {
         totalClientes: countEmpresas || 0,
         chamadosAbertos: countAndamento || 0,
         tarefasConcluidas: countConcluidos || 0,
-        faturamento: "R$ 42.500" // Fixo para demonstração visual
+        faturamento: faturamentoFormatado
     };
 }
 
@@ -277,6 +292,43 @@ async function getAdminTeam() {
     return data;
 }
 
+/**
+ * SELECT COMPLETO: Retorna as Estatisticas Reais de um Contador Específico
+ */
+async function getContadorStats(contadorId) {
+    // Busca número de empresas na carteira do contador
+    const { count: carteiraCount, error: errEmp } = await supabaseClient
+        .from('empresas')
+        .select('*', { count: 'exact', head: true })
+        .eq('contador_id', contadorId);
+
+    // Busca número total de obrigações e quantas em atraso
+    const { data: obrigacoesData, error: errObr } = await supabaseClient
+        .from('obrigacoes')
+        .select('status')
+        .eq('contador_id', contadorId);
+
+    let carteira = carteiraCount || 0;
+    let percentualPrazo = 100;
+    let labelGeral = "Bom";
+
+    if (!errObr && obrigacoesData && obrigacoesData.length > 0) {
+        let total = obrigacoesData.length;
+        let emAtraso = obrigacoesData.filter(o => o.status === 'Em Atraso').length;
+
+        percentualPrazo = Math.round(((total - emAtraso) / total) * 100);
+
+        if (percentualPrazo === 100) labelGeral = "Excelente";
+        else if (percentualPrazo >= 90) labelGeral = "Bom";
+        else labelGeral = "Atenção";
+    } else {
+        // Se nao tem obrigações, tá 100% no prazo nativamente
+        labelGeral = "Excelente";
+    }
+
+    return { carteira, prazo: percentualPrazo, labelGeral };
+}
+
 // Exporta as funções para serem usadas globalmente (se em módulo) ou
 // simplesmente podem ser chamadas em outros arquivos JS carregados depois deste.
 window.db = {
@@ -293,5 +345,6 @@ window.db = {
     getEmpresasDoContador,
     getAdminMetrics,
     getAdminTeam,
+    getContadorStats,
     atualizarConfiguracoesAdmin
 };
